@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum TeamType {
+  TWO_VS_TWO
+  THREE_VS_THREE
+}
+
+enum MatchStatus {
+  LIVE
+  FINISHED
+  CANCELLED
+}
+
+enum Team {
+  A
+  B
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  password     String
+  name         String
+  role         UserRole  @default(USER)
+  emailVerified DateTime?
+  image        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  matchPlayers MatchPlayer[]
+  pointStats   PointStat[]
+  createdSeasons Season[]   @relation("SeasonCreatedBy")
+  createdMatches Match[]    @relation("MatchCreatedBy")
+  accounts     Account[]
+  sessions     Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Season {
+  id        String    @id @default(cuid())
+  name      String
+  startDate DateTime
+  endDate   DateTime?
+  isActive  Boolean   @default(false)
+  createdBy String
+  creator   User      @relation("SeasonCreatedBy", fields: [createdBy], references: [id])
+  createdAt DateTime  @default(now())
+
+  matches   Match[]
+}
+
+model Match {
+  id         String      @id @default(cuid())
+  seasonId   String
+  season     Season      @relation(fields: [seasonId], references: [id])
+  teamType   TeamType
+  status     MatchStatus @default(LIVE)
+  winner     Team?
+  notes      String?
+  createdBy  String
+  creator    User        @relation("MatchCreatedBy", fields: [createdBy], references: [id])
+  createdAt  DateTime    @default(now())
+  finishedAt DateTime?
+
+  players    MatchPlayer[]
+  sets       Set[]
+  points     PointStat[]
+}
+
+model MatchPlayer {
+  id      String @id @default(cuid())
+  matchId String
+  match   Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team    Team
+
+  @@unique([matchId, userId])
+}
+
+model Set {
+  id         String @id @default(cuid())
+  matchId    String
+  match      Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  setNumber  Int
+  teamAScore Int    @default(0)
+  teamBScore Int    @default(0)
+
+  @@unique([matchId, setNumber])
+}
+
+model PointStat {
+  id         String @id @default(cuid())
+  matchId    String
+  match      Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  setNumber  Int
+  pointsWon  Int    @default(0)
+  pointsLost Int    @default(0)
+  team       Team
+
+  @@unique([matchId, userId, setNumber])
+}

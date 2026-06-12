@@ -1,0 +1,166 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-heading: var(--font-anybody);
+  --font-score: var(--font-anybody);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-team-a: var(--team-a);
+  --color-team-a-foreground: var(--team-a-foreground);
+  --color-team-b: var(--team-b);
+  --color-team-b-foreground: var(--team-b-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-surface: var(--surface);
+  --color-surface-high: var(--surface-high);
+  --color-surface-highest: var(--surface-highest);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: #0e1511;
+  --foreground: #dde4dd;
+  --primary: #4edea3;
+  --primary-foreground: #003824;
+  --secondary: #ec6a06;
+  --secondary-foreground: #ffffff;
+  --team-a: #4edea3;
+  --team-a-foreground: #003824;
+  --team-b: #ec6a06;
+  --team-b-foreground: #ffffff;
+  --muted: #161d19;
+  --muted-foreground: #bbcabf;
+  --accent: #242c27;
+  --accent-foreground: #dde4dd;
+  --destructive: #ffb4ab;
+  --destructive-foreground: #690005;
+  --border: #3c4a42;
+  --input: #3c4a42;
+  --ring: #4edea3;
+  --card: #1a211d;
+  --card-foreground: #dde4dd;
+  --popover: #1a211d;
+  --popover-foreground: #dde4dd;
+  --surface: #1a211d;
+  --surface-high: #242c27;
+  --surface-highest: #2f3632;
+  --radius: 0.75rem;
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  font-family: var(--font-inter), sans-serif;
+  height: 100%;
+}
+
+.glass-surface {
+  background-color: rgba(26, 33, 29, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(60, 74, 66, 0.5);
+}
+
+.glass-card {
+  background-color: rgba(30, 33, 31, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(60, 74, 66, 0.4);
+  border-radius: var(--radius-xl);
+}
+
+.score-display {
+  font-family: var(--font-anybody), "Anybody", sans-serif;
+  font-weight: 800;
+  font-stretch: condensed;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.tap-effect {
+  transition: transform 150ms ease, opacity 150ms ease;
+}
+
+.tap-effect:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+.accent-glow-primary {
+  box-shadow: 0 0 20px rgba(78, 222, 163, 0.3), 0 0 40px rgba(78, 222, 163, 0.1);
+}
+
+.accent-glow-secondary {
+  box-shadow: 0 0 20px rgba(236, 106, 6, 0.3), 0 0 40px rgba(236, 106, 6, 0.1);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes pulse-emerald {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes pulse-orange {
+  0% {
+    box-shadow: 0 0 0 0 rgba(236, 106, 6, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(236, 106, 6, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(236, 106, 6, 0);
+  }
+}
