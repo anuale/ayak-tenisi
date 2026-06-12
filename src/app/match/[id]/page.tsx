@@ -24,14 +24,17 @@ export default async function MatchDetailPage({
 
   if (!match) notFound();
 
-  const teamA = match.players
+  const teamA = match.teamAName || match.players
     .filter((p) => p.team === "A")
     .map((p) => p.user.name)
     .join(", ");
-  const teamB = match.players
+  const teamB = match.teamBName || match.players
     .filter((p) => p.team === "B")
     .map((p) => p.user.name)
     .join(", ");
+
+  const teamAWins = match.sets.filter((s) => s.teamAScore > s.teamBScore).length;
+  const teamBWins = match.sets.filter((s) => s.teamBScore > s.teamAScore).length;
 
   return (
     <div className="flex flex-col min-h-screen max-w-lg md:max-w-4xl mx-auto pb-24">
@@ -67,24 +70,24 @@ export default async function MatchDetailPage({
         <div className="glass-surface border border-border/50 rounded-xl p-6 text-center">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">{teamA}</p>
+              <p className="text-sm font-bold text-foreground">{teamA}</p>
             </div>
-            <div className="text-2xl font-bold">
-              <span className={match.winner === "A" ? "text-primary" : "text-muted-foreground"}>
-                {match.sets.filter((s) => s.teamAScore > s.teamBScore).length}
+            <div className="text-3xl font-heading font-bold">
+              <span className={match.winner === "A" ? "text-primary" : "text-muted-foreground opacity-50"}>
+                {teamAWins}
               </span>
               <span className="text-muted-foreground opacity-30 mx-2">-</span>
-              <span className={match.winner === "B" ? "text-team-b" : "text-muted-foreground"}>
-                {match.sets.filter((s) => s.teamBScore > s.teamAScore).length}
+              <span className={match.winner === "B" ? "text-team-b" : "text-muted-foreground opacity-50"}>
+                {teamBWins}
               </span>
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">{teamB}</p>
+              <p className="text-sm font-bold text-foreground">{teamB}</p>
             </div>
           </div>
 
           {match.winner && (
-            <p className="text-xs text-primary font-mono font-bold mt-3 uppercase tracking-widest">
+            <p className="text-sm text-primary font-mono font-bold mt-4 uppercase tracking-widest">
               {match.winner === "A" ? teamA : teamB} KAZANDI
             </p>
           )}
@@ -98,48 +101,23 @@ export default async function MatchDetailPage({
             {match.sets.map((set) => (
               <div
                 key={set.setNumber}
-                className="flex items-center justify-between px-4 py-2 rounded-lg bg-surface/50"
+                className={`flex items-center justify-between px-4 py-3 rounded-lg ${
+                  set.teamAScore > set.teamBScore
+                    ? "bg-primary/5 border border-primary/10"
+                    : "bg-team-b/5 border border-team-b/10"
+                }`}
               >
                 <span className="text-xs text-muted-foreground">
                   Set {set.setNumber}
                 </span>
-                <span className="text-sm font-mono font-bold text-foreground">
+                <span className="text-lg font-heading font-bold text-foreground">
                   {set.teamAScore} - {set.teamBScore}
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  {set.teamAScore > set.teamBScore ? teamA : teamB}
                 </span>
               </div>
             ))}
-          </div>
-        </div>
-
-        <div className="glass-surface border border-border/50 rounded-xl p-4">
-          <h3 className="text-xs font-mono font-bold text-muted-foreground uppercase tracking-widest mb-4">
-            Takım Kadroları
-          </h3>
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <p className="text-[10px] font-mono font-bold text-primary uppercase tracking-widest mb-2">
-                TAKIM A
-              </p>
-              {match.players
-                .filter((p) => p.team === "A")
-                .map((p) => (
-                  <p key={p.id} className="text-sm text-foreground">
-                    {p.user.name}
-                  </p>
-                ))}
-            </div>
-            <div className="flex-1 text-right">
-              <p className="text-[10px] font-mono font-bold text-team-b uppercase tracking-widest mb-2">
-                TAKIM B
-              </p>
-              {match.players
-                .filter((p) => p.team === "B")
-                .map((p) => (
-                  <p key={p.id} className="text-sm text-foreground">
-                    {p.user.name}
-                  </p>
-                ))}
-            </div>
           </div>
         </div>
       </main>

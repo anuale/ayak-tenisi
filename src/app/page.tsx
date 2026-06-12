@@ -148,11 +148,11 @@ export default async function DashboardPage() {
           ) : (
             <div className="flex flex-col gap-3">
               {recentMatches.map((match) => {
-                const teamA = match.players
+                const teamA = match.teamAName || match.players
                   .filter((p) => p.team === "A")
                   .map((p) => p.user.name)
                   .join(", ");
-                const teamB = match.players
+                const teamB = match.teamBName || match.players
                   .filter((p) => p.team === "B")
                   .map((p) => p.user.name)
                   .join(", ");

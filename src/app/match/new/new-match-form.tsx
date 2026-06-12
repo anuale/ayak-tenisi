@@ -23,11 +23,19 @@ export function NewMatchForm({
   );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [teamAName, setTeamAName] = useState("");
+  const [teamBName, setTeamBName] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+
+    if (!teamAName.trim() || !teamBName.trim()) {
+      setError("Her iki takım için de isim giriniz.");
+      setIsLoading(false);
+      return;
+    }
 
     const formData = new FormData(e.currentTarget);
     const playersA: string[] = [];
@@ -61,6 +69,8 @@ export function NewMatchForm({
         body: JSON.stringify({
           seasonId,
           teamType,
+          teamAName: teamAName.trim(),
+          teamBName: teamBName.trim(),
           playersA,
           playersB,
         }),
@@ -99,7 +109,7 @@ export function NewMatchForm({
         <div className="w-10" />
       </header>
 
-      <div className="flex-1 px-6 flex flex-col gap-6 mt-4">
+      <div className="flex-1 px-6 flex flex-col gap-5 mt-2">
         <div className="w-full flex justify-center">
           <div className="bg-surface/50 backdrop-blur-md rounded-full p-1 flex border border-white/10 relative w-64">
             <div
@@ -133,28 +143,42 @@ export function NewMatchForm({
         </div>
 
         <form id="match-form" onSubmit={handleSubmit} className="flex flex-col gap-4 flex-1">
-          <div className="flex gap-4 flex-1">
-            <PlayerColumn
-              team="A"
-              label="TAKIM A"
-              accentColor="team-a"
-              playerCount={playerCount}
-              users={users}
-            />
-            <div className="flex flex-col items-center justify-center py-8">
-              <div className="w-[1px] h-full bg-gradient-to-b from-transparent via-white/20 to-transparent" />
-              <div className="w-8 h-8 rounded-full bg-surface border border-white/10 flex items-center justify-center my-2">
+          <div className="flex gap-4 items-start">
+            <div className="flex-1 flex flex-col gap-3">
+              <input
+                className="bg-surface-high border border-border rounded-lg px-4 py-3 text-sm text-center text-primary font-bold placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                placeholder="Takım A ismi"
+                value={teamAName}
+                onChange={(e) => setTeamAName(e.target.value)}
+              />
+              <PlayerSelects
+                team="A"
+                accentColor="team-a"
+                playerCount={playerCount}
+                users={users}
+              />
+            </div>
+
+            <div className="flex flex-col items-center justify-center pt-8">
+              <div className="w-8 h-8 rounded-full bg-surface border border-white/10 flex items-center justify-center">
                 <span className="font-heading text-sm text-foreground">VS</span>
               </div>
-              <div className="w-[1px] h-full bg-gradient-to-b from-transparent via-white/20 to-transparent" />
             </div>
-            <PlayerColumn
-              team="B"
-              label="TAKIM B"
-              accentColor="team-b"
-              playerCount={playerCount}
-              users={users}
-            />
+
+            <div className="flex-1 flex flex-col gap-3">
+              <input
+                className="bg-surface-high border border-border rounded-lg px-4 py-3 text-sm text-center text-team-b font-bold placeholder:text-muted-foreground focus:border-team-b focus:outline-none"
+                placeholder="Takım B ismi"
+                value={teamBName}
+                onChange={(e) => setTeamBName(e.target.value)}
+              />
+              <PlayerSelects
+                team="B"
+                accentColor="team-b"
+                playerCount={playerCount}
+                users={users}
+              />
+            </div>
           </div>
 
           <div className="bg-surface/30 rounded-xl border border-white/5 p-4 flex justify-between items-center mt-auto">
@@ -206,15 +230,13 @@ export function NewMatchForm({
   );
 }
 
-function PlayerColumn({
+function PlayerSelects({
   team,
-  label,
   accentColor,
   playerCount,
   users,
 }: {
   team: "A" | "B";
-  label: string;
   accentColor: string;
   playerCount: number;
   users: UserOption[];
@@ -223,77 +245,51 @@ function PlayerColumn({
   const barColor = isTeamA ? "bg-primary" : "bg-team-b";
 
   return (
-    <div className="flex-1 flex flex-col gap-3">
-      <div className="text-center pb-2 border-b border-white/10">
-        <span
-          className={`text-xs font-mono font-bold tracking-widest ${
-            isTeamA ? "text-primary" : "text-team-b"
-          }`}
-        >
-          {label}
-        </span>
-      </div>
-      <div className="flex flex-col gap-3">
-        {Array.from({ length: 3 }).map((_, i) => {
-          const hidden = i >= playerCount;
-          return (
+    <div className="flex flex-col gap-2">
+      {Array.from({ length: 3 }).map((_, i) => {
+        const hidden = i >= playerCount;
+        return (
+          <div
+            key={i}
+            className={`bg-surface/50 rounded-lg border border-white/5 p-3 flex flex-col gap-1 relative overflow-hidden transition-all ${
+              hidden ? "opacity-20" : ""
+            }`}
+          >
             <div
-              key={i}
-              className={`bg-surface/50 rounded-lg border border-white/5 p-3 flex flex-col gap-2 relative overflow-hidden transition-all ${
-                hidden ? "opacity-20" : ""
+              className={`absolute top-0 w-1 h-full opacity-50 ${barColor} ${
+                isTeamA ? "left-0" : "right-0"
               }`}
-            >
-              <div
-                className={`absolute top-0 w-1 h-full opacity-50 ${barColor} ${
-                  isTeamA ? "left-0" : "right-0"
-                }`}
-              />
-              <div className="flex items-center gap-3">
-                {!isTeamA && (
-                  <div className="w-8 h-8 rounded-full bg-surface-high border border-white/10 flex items-center justify-center flex-shrink-0">
-                    <Users className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                )}
-                {hidden ? (
-                  <div className="text-muted-foreground text-sm">
-                    3v3 için
-                  </div>
-                ) : (
-                  <select
-                    name={`team${team}_player_${i + 1}`}
-                    defaultValue=""
-                    className="w-full bg-transparent border-none text-foreground text-sm p-0 pr-6 focus:ring-0 outline-none cursor-pointer appearance-none"
-                    style={{
-                      backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386948a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "right 0 center",
-                      backgroundSize: "1em",
-                    }}
-                  >
-                    <option value="" disabled className="bg-surface text-foreground">
-                      Seçiniz
-                    </option>
-                    {users.map((user) => (
-                      <option
-                        key={user.id}
-                        value={user.id}
-                        className="bg-surface text-foreground"
-                      >
-                        {user.name}
-                      </option>
-                    ))}
-                  </select>
-                )}
-                {isTeamA && (
-                  <div className="w-8 h-8 rounded-full bg-surface-high border border-white/10 flex items-center justify-center flex-shrink-0">
-                    <Users className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            />
+            <label className={`text-[10px] text-muted-foreground ${isTeamA ? "pl-2" : "pr-2 text-right"}`}>
+              Oyuncu {i + 1}
+            </label>
+            {hidden ? (
+              <div className="text-muted-foreground text-xs px-2">3v3 için</div>
+            ) : (
+              <select
+                name={`team${team}_player_${i + 1}`}
+                defaultValue=""
+                className="w-full bg-transparent border-none text-foreground text-sm px-2 py-0 pr-6 focus:ring-0 outline-none cursor-pointer appearance-none"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386948a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "right 0 center",
+                  backgroundSize: "1em",
+                }}
+              >
+                <option value="" disabled className="bg-surface text-foreground">
+                  Seçiniz
+                </option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id} className="bg-surface text-foreground">
+                    {user.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

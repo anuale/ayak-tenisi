@@ -21,28 +21,17 @@ export async function POST(
   }
 
   await db.$transaction(async (tx) => {
-    const existingSets = await tx.set.findMany({ where: { matchId: id } });
-    const existingSetNumbers = new Set(existingSets.map((s) => s.setNumber));
+    await tx.set.deleteMany({ where: { matchId: id } });
 
     for (const setScore of setScores) {
-      if (existingSetNumbers.has(setScore.setNumber)) {
-        await tx.set.updateMany({
-          where: { matchId: id, setNumber: setScore.setNumber },
-          data: {
-            teamAScore: setScore.teamA,
-            teamBScore: setScore.teamB,
-          },
-        });
-      } else {
-        await tx.set.create({
-          data: {
-            matchId: id,
-            setNumber: setScore.setNumber,
-            teamAScore: setScore.teamA,
-            teamBScore: setScore.teamB,
-          },
-        });
-      }
+      await tx.set.create({
+        data: {
+          matchId: id,
+          setNumber: setScore.setNumber || setScore.setNumber,
+          teamAScore: setScore.teamA,
+          teamBScore: setScore.teamB,
+        },
+      });
     }
 
     await tx.match.update({

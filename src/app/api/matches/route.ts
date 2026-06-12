@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { seasonId, teamType, playersA, playersB } = body;
+  const { seasonId, teamType, teamAName, teamBName, playersA, playersB } = body;
 
   if (!seasonId || !teamType || !playersA?.length || !playersB?.length) {
     return NextResponse.json({ error: "Eksik bilgi" }, { status: 400 });
@@ -19,6 +19,8 @@ export async function POST(request: Request) {
     data: {
       seasonId,
       teamType,
+      teamAName: teamAName || null,
+      teamBName: teamBName || null,
       createdBy: session.user.id,
       status: "LIVE",
       players: {

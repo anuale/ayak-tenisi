@@ -101,6 +101,8 @@ model Match {
   seasonId   String
   season     Season      @relation(fields: [seasonId], references: [id])
   teamType   TeamType
+  teamAName  String?
+  teamBName  String?
   status     MatchStatus @default(LIVE)
   winner     Team?
   notes      String?

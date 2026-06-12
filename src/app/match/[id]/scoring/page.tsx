@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
-import { LiveScoring } from "./live-scoring";
+import { ScoreEntry } from "./score-entry";
 
 export const dynamic = "force-dynamic";
 
@@ -16,11 +16,13 @@ export default async function ScoringPage({
     include: {
       players: { include: { user: { select: { id: true, name: true } } } },
       sets: { orderBy: { setNumber: "asc" } },
-      points: true,
     },
   });
 
   if (!match || match.status !== "LIVE") notFound();
 
-  return <LiveScoring match={match} />;
+  const teamA = match.teamAName || match.players.filter(p => p.team === "A").map(p => p.user.name).join(", ");
+  const teamB = match.teamBName || match.players.filter(p => p.team === "B").map(p => p.user.name).join(", ");
+
+  return <ScoreEntry match={match} teamAName={teamA} teamBName={teamB} />;
 }
