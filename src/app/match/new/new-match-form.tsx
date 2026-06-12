@@ -261,7 +261,6 @@ function PlayerColumn({
                 ) : (
                   <select
                     name={`team${team}_player_${i + 1}`}
-                    required
                     defaultValue=""
                     className="w-full bg-transparent border-none text-foreground text-sm p-0 pr-6 focus:ring-0 outline-none cursor-pointer appearance-none"
                     style={{
