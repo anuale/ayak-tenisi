@@ -15,7 +15,7 @@ export function BottomNavBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="bg-surface/80 backdrop-blur-xl border-t border-border/50 flex justify-around items-center h-20 pb-safe fixed bottom-0 w-full z-50 max-w-lg left-1/2 -translate-x-1/2 rounded-t-xl">
+    <nav className="bg-surface/80 backdrop-blur-xl border-t border-border/50 flex justify-around items-center h-20 pb-safe fixed bottom-0 w-full z-50 max-w-lg md:max-w-4xl left-1/2 -translate-x-1/2 rounded-t-xl">
       {navItems.map((item) => {
         const isActive =
           item.href === "/"

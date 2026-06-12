@@ -17,7 +17,7 @@ export default async function HistoryPage() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto pb-24">
+    <div className="flex flex-col min-h-screen max-w-lg md:max-w-4xl mx-auto pb-24">
       <TopAppBar title="AYAK TENİSİ SKOR" />
 
       <main className="flex-1 px-6 pt-6 flex flex-col gap-4">

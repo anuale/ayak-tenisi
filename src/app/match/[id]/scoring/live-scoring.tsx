@@ -92,7 +92,7 @@ export function LiveScoring({ match }: { match: Match }) {
   const targetSets = getTargetSets();
 
   return (
-    <div className="h-dvh w-screen overflow-hidden flex flex-col bg-background select-none touch-manipulation max-w-lg mx-auto">
+    <div className="h-dvh w-screen overflow-hidden flex flex-col bg-background select-none touch-manipulation max-w-lg md:max-w-4xl mx-auto">
       <header className="flex justify-between items-center px-6 h-12 bg-background/50 backdrop-blur-xl border-b border-border/50">
         <Link
           href="/"

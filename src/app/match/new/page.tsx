@@ -18,7 +18,7 @@ export default async function NewMatchPage() {
 
   if (!activeSeason) {
     return (
-      <div className="flex flex-col min-h-screen max-w-lg mx-auto items-center justify-center px-6 text-center">
+      <div className="flex flex-col min-h-screen max-w-lg md:max-w-4xl mx-auto items-center justify-center px-6 text-center">
         <h2 className="text-xl font-bold text-foreground mb-4">
           Aktif Sezon Bulunamadı
         </h2>

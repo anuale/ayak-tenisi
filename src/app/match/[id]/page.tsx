@@ -34,7 +34,7 @@ export default async function MatchDetailPage({
     .join(", ");
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto pb-24">
+    <div className="flex flex-col min-h-screen max-w-lg md:max-w-4xl mx-auto pb-24">
       <header className="flex items-center justify-between px-6 py-4">
         <Link
           href="/"

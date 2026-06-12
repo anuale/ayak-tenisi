@@ -43,16 +43,26 @@ export default async function DashboardPage() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto relative">
+    <div className="flex flex-col min-h-screen max-w-lg md:max-w-4xl md:max-w-4xl mx-auto relative">
       <TopAppBar title="AYAK TENİSİ SKOR" />
 
       <main className="flex-1 overflow-y-auto px-6 pt-6 pb-24 flex flex-col gap-8">
         {/* Welcome */}
-        <div className="text-sm text-muted-foreground">
-          Hoş geldin,{" "}
-          <span className="text-foreground font-medium">
-            {session?.user?.name || "Oyuncu"}
-          </span>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Hoş geldin,{" "}
+            <span className="text-foreground font-medium">
+              {session?.user?.name || "Oyuncu"}
+            </span>
+          </p>
+          {(session?.user as any)?.role === "ADMIN" && (
+            <Link
+              href="/admin"
+              className="text-[10px] font-mono font-bold text-primary/70 hover:text-primary transition-colors uppercase tracking-widest"
+            >
+              Admin
+            </Link>
+          )}
         </div>
 
         {/* Season Badge */}
