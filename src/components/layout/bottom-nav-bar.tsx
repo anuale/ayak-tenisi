@@ -8,7 +8,7 @@ const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/standings", label: "Standings", icon: Trophy },
   { href: "/history", label: "History", icon: Clock },
-  { href: "/players", label: "Profile", icon: User },
+  { href: "/settings", label: "Profile", icon: User },
 ];
 
 export function BottomNavBar() {
