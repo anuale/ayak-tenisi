@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Trophy, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
@@ -10,28 +10,41 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
-  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIsLoading(true);
     setError("");
 
-    const result = await signIn("credentials", {
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
-      redirect: false,
-    });
+    const formData = new FormData(e.currentTarget);
 
-    if (result?.error) {
-      setError("E-posta veya şifre hatalı.");
-      return;
+    try {
+      const result = await signIn("credentials", {
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
+
+      if (result?.ok) {
+        router.push(callbackUrl);
+        router.refresh();
+      } else {
+        setError("Giriş yapılamadı. Lütfen tekrar deneyin.");
+      }
+    } catch (err) {
+      setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
-
-    startTransition(() => {
-      router.push(callbackUrl);
-      router.refresh();
-    });
   }
 
   return (
@@ -49,7 +62,7 @@ export function LoginForm() {
       </div>
 
       <div className="bg-surface/30 backdrop-blur-xl border border-white/10 rounded-xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-        <form action={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="relative w-full">
             <input
               className="peer block w-full appearance-none rounded-t-lg border-0 border-b-2 border-border bg-surface-high px-4 pb-2.5 pt-6 text-base text-foreground focus:border-primary focus:outline-none focus:ring-0"
@@ -59,6 +72,7 @@ export function LoginForm() {
               required
               type="email"
               autoComplete="email"
+              disabled={isLoading}
             />
             <label
               className="absolute left-4 top-4 z-10 origin-[0] -translate-y-2 scale-75 transform text-sm text-muted-foreground duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-2 peer-focus:scale-75 peer-focus:text-primary"
@@ -77,6 +91,7 @@ export function LoginForm() {
               required
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
+              disabled={isLoading}
             />
             <label
               className="absolute left-4 top-4 z-10 origin-[0] -translate-y-2 scale-75 transform text-sm text-muted-foreground duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-2 peer-focus:scale-75 peer-focus:text-primary"
@@ -98,7 +113,9 @@ export function LoginForm() {
           </div>
 
           {error && (
-            <p className="text-destructive text-sm text-center">{error}</p>
+            <p className="text-destructive text-sm text-center bg-destructive/10 rounded-lg py-2 px-3">
+              {error}
+            </p>
           )}
 
           <div className="flex items-center justify-end mt-2 mb-4">
@@ -112,10 +129,10 @@ export function LoginForm() {
 
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isLoading}
             className="h-12 bg-primary text-primary-foreground font-bold text-lg rounded-full active:scale-95 active:opacity-80 transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(78,222,163,0.3)] hover:shadow-[0_0_30px_rgba(78,222,163,0.5)] disabled:opacity-50"
           >
-            {isPending ? (
+            {isLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <>
