@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Play, Users } from "lucide-react";
 import Link from "next/link";
@@ -18,15 +18,18 @@ export function NewMatchForm({
   seasonId: string;
 }) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [teamType, setTeamType] = useState<"TWO_VS_TWO" | "THREE_VS_THREE">(
     "TWO_VS_TWO",
   );
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIsLoading(true);
     setError("");
 
+    const formData = new FormData(e.currentTarget);
     const playersA: string[] = [];
     const playersB: string[] = [];
 
@@ -39,6 +42,7 @@ export function NewMatchForm({
 
     if (playersA.length !== playersB.length) {
       setError("Her iki takımda da aynı sayıda oyuncu seçilmelidir.");
+      setIsLoading(false);
       return;
     }
 
@@ -46,32 +50,36 @@ export function NewMatchForm({
     const uniqueIds = new Set(allPlayerIds);
     if (uniqueIds.size !== allPlayerIds.length) {
       setError("Bir oyuncu aynı maçta iki takımda da olamaz.");
+      setIsLoading(false);
       return;
     }
 
-    const res = await fetch("/api/matches", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        seasonId,
-        teamType,
-        playersA,
-        playersB,
-      }),
-    });
+    try {
+      const res = await fetch("/api/matches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          seasonId,
+          teamType,
+          playersA,
+          playersB,
+        }),
+      });
 
-    if (!res.ok) {
-      const data = await res.json();
-      setError(data.error || "Maç oluşturulamadı.");
-      return;
-    }
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Maç oluşturulamadı.");
+        setIsLoading(false);
+        return;
+      }
 
-    const match = await res.json();
-
-    startTransition(() => {
+      const match = await res.json();
       router.push(`/match/${match.id}/scoring`);
       router.refresh();
-    });
+    } catch {
+      setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+      setIsLoading(false);
+    }
   }
 
   const playerCount = teamType === "TWO_VS_TWO" ? 2 : 3;
@@ -124,7 +132,7 @@ export function NewMatchForm({
           </div>
         </div>
 
-        <form action={handleSubmit} className="flex flex-col gap-4 flex-1">
+        <form id="match-form" onSubmit={handleSubmit} className="flex flex-col gap-4 flex-1">
           <div className="flex gap-4 flex-1">
             <PlayerColumn
               team="A"
@@ -170,7 +178,9 @@ export function NewMatchForm({
           </div>
 
           {error && (
-            <p className="text-destructive text-sm text-center">{error}</p>
+            <p className="text-destructive text-sm text-center py-2 bg-destructive/10 rounded-lg">
+              {error}
+            </p>
           )}
         </form>
       </div>
@@ -179,17 +189,11 @@ export function NewMatchForm({
         <button
           type="submit"
           form="match-form"
-          onClick={() => {
-            const form = document.getElementById(
-              "match-form",
-            ) as HTMLFormElement;
-            form?.requestSubmit();
-          }}
-          disabled={isPending}
+          disabled={isLoading}
           className="w-full h-20 bg-primary rounded-full flex items-center justify-center gap-2 text-primary-foreground font-heading text-xl font-bold shadow-[0_0_20px_rgba(78,222,163,0.3)] active:scale-95 transition-transform duration-200 disabled:opacity-50"
         >
-          {isPending ? (
-            <span className="animate-spin">⟳</span>
+          {isLoading ? (
+            <span className="animate-spin text-2xl">⟳</span>
           ) : (
             <>
               MAÇI BAŞLAT
