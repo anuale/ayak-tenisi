@@ -54,7 +54,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        (session.user as any).role = token.role;
+        const dbUser = await db.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true },
+        });
+        (session.user as any).role = dbUser?.role || token.role;
       }
       return session;
     },

@@ -4,7 +4,7 @@ RUN apk add --no-cache openssl
 FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 FROM base AS builder
 WORKDIR /app
