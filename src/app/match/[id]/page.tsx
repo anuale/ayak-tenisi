@@ -1,8 +1,10 @@
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { BottomNavBar } from "@/components/layout/bottom-nav-bar";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { MatchEditor } from "./match-editor";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +13,7 @@ export default async function MatchDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const session = await auth();
   const { id } = await params;
 
   const match = await db.match.findUnique({
@@ -24,14 +27,13 @@ export default async function MatchDetailPage({
 
   if (!match) notFound();
 
-  const teamA = match.teamAName || match.players
-    .filter((p) => p.team === "A")
-    .map((p) => p.user.name)
-    .join(", ");
-  const teamB = match.teamBName || match.players
-    .filter((p) => p.team === "B")
-    .map((p) => p.user.name)
-    .join(", ");
+  const user = session?.user?.email
+    ? await db.user.findUnique({ where: { email: session.user.email } })
+    : null;
+  const canEdit = user?.id === match.createdBy || user?.role === "ADMIN";
+
+  const teamA = match.teamAName || "Takım A";
+  const teamB = match.teamBName || "Takım B";
 
   const teamAWins = match.sets.filter((s) => s.teamAScore > s.teamBScore).length;
   const teamBWins = match.sets.filter((s) => s.teamBScore > s.teamAScore).length;
@@ -40,7 +42,7 @@ export default async function MatchDetailPage({
     <div className="flex flex-col min-h-screen max-w-lg md:max-w-4xl mx-auto pb-24">
       <header className="flex items-center justify-between px-6 py-4">
         <Link
-          href="/"
+          href="/history"
           className="w-10 h-10 flex items-center justify-center rounded-full bg-surface/50 border border-white/10"
         >
           <ArrowLeft className="w-5 h-5 text-foreground" />
@@ -71,6 +73,9 @@ export default async function MatchDetailPage({
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
               <p className="text-sm font-bold text-foreground">{teamA}</p>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                {match.players.filter(p => p.team === "A").map(p => p.user.name).join(", ")}
+              </p>
             </div>
             <div className="text-3xl font-heading font-bold">
               <span className={match.winner === "A" ? "text-primary" : "text-muted-foreground opacity-50"}>
@@ -83,6 +88,9 @@ export default async function MatchDetailPage({
             </div>
             <div className="flex-1">
               <p className="text-sm font-bold text-foreground">{teamB}</p>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                {match.players.filter(p => p.team === "B").map(p => p.user.name).join(", ")}
+              </p>
             </div>
           </div>
 
@@ -120,6 +128,18 @@ export default async function MatchDetailPage({
             ))}
           </div>
         </div>
+
+        {canEdit && (
+          <div className="mt-auto">
+            <MatchEditor
+              matchId={match.id}
+              teamAName={teamA}
+              teamBName={teamB}
+              sets={JSON.parse(JSON.stringify(match.sets))}
+              winner={match.winner}
+            />
+          </div>
+        )}
       </main>
 
       <BottomNavBar />

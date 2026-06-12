@@ -19,8 +19,8 @@ export async function POST(request: Request) {
     data: {
       seasonId,
       teamType,
-      teamAName: teamAName || null,
-      teamBName: teamBName || null,
+      teamAName: teamAName || "Takım A",
+      teamBName: teamBName || "Takım B",
       createdBy: session.user.id,
       status: "LIVE",
       players: {

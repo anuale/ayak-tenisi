@@ -31,12 +31,6 @@ export function NewMatchForm({
     setIsLoading(true);
     setError("");
 
-    if (!teamAName.trim() || !teamBName.trim()) {
-      setError("Her iki takım için de isim giriniz.");
-      setIsLoading(false);
-      return;
-    }
-
     const formData = new FormData(e.currentTarget);
     const playersA: string[] = [];
     const playersB: string[] = [];

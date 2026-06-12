@@ -26,7 +26,7 @@ export default async function DashboardPage() {
     take: 5,
   });
 
-  const activePlayersCount = await db.user.count({ where: { role: "USER" } });
+  const activePlayersCount = await db.user.count();
 
   const weekMatches = await db.match.count({
     where: {
@@ -36,6 +36,34 @@ export default async function DashboardPage() {
       },
     },
   });
+
+  const finishedMatches = await db.match.findMany({
+    where: { status: "FINISHED" },
+    include: {
+      players: { include: { user: { select: { id: true, name: true } } } },
+      sets: true,
+    },
+  });
+
+  const playerWinCount = new Map<string, { name: string; wins: number }>();
+  for (const m of finishedMatches) {
+    const winningTeam = m.winner;
+    for (const mp of m.players) {
+      if (!playerWinCount.has(mp.userId)) {
+        playerWinCount.set(mp.userId, { name: mp.user.name, wins: 0 });
+      }
+      if (mp.team === winningTeam) {
+        playerWinCount.get(mp.userId)!.wins++;
+      }
+    }
+  }
+  const topPlayers = Array.from(playerWinCount.values())
+    .sort((a, b) => b.wins - a.wins);
+  const maxWins = topPlayers[0]?.wins || 0;
+  const topScorers = topPlayers.filter(p => p.wins === maxWins && maxWins > 0).map(p => p.name);
+  const topScorerLabel = topScorers.length > 0
+    ? (topScorers.length === 1 ? topScorers[0] : topScorers.slice(0, 2).join(", ") + (topScorers.length > 2 ? ` +${topScorers.length - 2}` : ""))
+    : "--";
 
   const activeSeason = await db.season.findFirst({
     where: { isActive: true },
@@ -112,8 +140,8 @@ export default async function DashboardPage() {
           </div>
           <div className="glass-surface border border-border/50 rounded-xl p-3 flex flex-col items-center justify-center gap-1">
             <Flame className="w-5 h-5 text-team-b" />
-            <span className="font-heading text-xl font-bold text-foreground">
-              --
+            <span className="font-heading text-sm font-bold text-foreground truncate w-full text-center">
+              {topScorerLabel}
             </span>
             <span className="text-[10px] text-muted-foreground text-center opacity-70">
               GOL KRALI
