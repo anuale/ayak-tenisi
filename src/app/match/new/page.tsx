@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function NewMatchPage() {
   const session = await auth();
   const users = await db.user.findMany({
-    where: { role: "USER" },
+    where: {},
     orderBy: { name: "asc" },
   });
 
