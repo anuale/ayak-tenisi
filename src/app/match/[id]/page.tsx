@@ -30,7 +30,7 @@ export default async function MatchDetailPage({
   const user = session?.user?.email
     ? await db.user.findUnique({ where: { email: session.user.email } })
     : null;
-  const canEdit = user?.id === match.createdBy || user?.role === "ADMIN";
+  const canEdit = user?.role === "ADMIN";
 
   const teamA = match.teamAName || "Takım A";
   const teamB = match.teamBName || "Takım B";
@@ -128,6 +128,12 @@ export default async function MatchDetailPage({
             ))}
           </div>
         </div>
+
+        {match.lastEditedAt && (
+          <p className="text-[10px] text-muted-foreground text-center">
+            Son düzenleme: {new Date(match.lastEditedAt).toLocaleString("tr-TR")} — {match.lastEditedBy || "bilinmiyor"}
+          </p>
+        )}
 
         {canEdit && (
           <div className="mt-auto">

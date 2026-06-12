@@ -2,6 +2,33 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
+export async function GET(request: Request) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+  }
+
+  const user = await db.user.findUnique({ where: { email: session.user.email } });
+  if (user?.role !== "ADMIN") {
+    return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const all = searchParams.get("all");
+
+  const matches = await db.match.findMany({
+    where: all ? undefined : { status: "FINISHED" },
+    include: {
+      players: { include: { user: { select: { name: true } } } },
+      sets: { orderBy: { setNumber: "asc" } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: all ? 100 : 20,
+  });
+
+  return NextResponse.json({ matches });
+}
+
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user?.id) {

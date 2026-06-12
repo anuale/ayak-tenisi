@@ -45,9 +45,15 @@ export async function POST(request: Request) {
   });
 }
 
+const SUPER_ADMIN_EMAIL = "anuale@gmail.com";
+
 export async function PATCH(request: Request) {
   const admin = await checkAdmin();
   if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+
+  if (admin.email !== SUPER_ADMIN_EMAIL) {
+    return NextResponse.json({ error: "Sadece ana admin rol değiştirebilir" }, { status: 403 });
+  }
 
   const { userId, role } = await request.json();
   if (!userId) return NextResponse.json({ error: "Kullanıcı ID gerekli" }, { status: 400 });

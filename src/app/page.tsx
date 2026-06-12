@@ -61,9 +61,18 @@ export default async function DashboardPage() {
     .sort((a, b) => b.wins - a.wins);
   const maxWins = topPlayers[0]?.wins || 0;
   const topScorers = topPlayers.filter(p => p.wins === maxWins && maxWins > 0).map(p => p.name);
-  const topScorerLabel = topScorers.length > 0
-    ? (topScorers.length === 1 ? topScorers[0] : topScorers.slice(0, 2).join(", ") + (topScorers.length > 2 ? ` +${topScorers.length - 2}` : ""))
-    : "--";
+  const topScorerNames = topScorers.length > 0 ? topScorers : ["--"];
+  const topScorerWins = maxWins;
+
+  const teamWinCount = new Map<string, number>();
+  for (const m of finishedMatches) {
+    const winnerName = m.winner === "A" ? (m.teamAName || "Takım A") : (m.teamBName || "Takım B");
+    teamWinCount.set(winnerName, (teamWinCount.get(winnerName) || 0) + 1);
+  }
+  const topTeamNames = Array.from(teamWinCount.entries())
+    .sort((a, b) => b[1] - a[1]);
+  const topTeamWins = topTeamNames[0]?.[1] || 0;
+  const topTeams = topTeamNames.filter(t => t[1] === topTeamWins && topTeamWins > 0).map(t => t[0]);
 
   const activeSeason = await db.season.findFirst({
     where: { isActive: true },
@@ -119,7 +128,7 @@ export default async function DashboardPage() {
         </section>
 
         {/* Quick Stats */}
-        <section className="grid grid-cols-3 gap-2">
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-2">
           <div className="glass-surface border border-border/50 rounded-xl p-3 flex flex-col items-center justify-center gap-1">
             <CalendarDays className="w-5 h-5 text-team-b" />
             <span className="font-heading text-xl font-bold text-foreground">
@@ -135,16 +144,35 @@ export default async function DashboardPage() {
               {activePlayersCount}
             </span>
             <span className="text-[10px] text-muted-foreground text-center opacity-70">
-              AKTİF OYUNCU
+              OYUNCU
             </span>
           </div>
           <div className="glass-surface border border-border/50 rounded-xl p-3 flex flex-col items-center justify-center gap-1">
             <Flame className="w-5 h-5 text-team-b" />
-            <span className="font-heading text-sm font-bold text-foreground truncate w-full text-center">
-              {topScorerLabel}
-            </span>
+            <div className="flex flex-col items-center gap-0.5 max-w-full">
+              {topScorerNames.map((name, i) => (
+                <span key={i} className="text-[11px] font-bold text-foreground leading-tight truncate max-w-full">
+                  {name}{topScorerWins > 0 ? ` (${topScorerWins}G)` : ""}
+                </span>
+              ))}
+            </div>
             <span className="text-[10px] text-muted-foreground text-center opacity-70">
               GOL KRALI
+            </span>
+          </div>
+          <div className="glass-surface border border-border/50 rounded-xl p-3 flex flex-col items-center justify-center gap-1">
+            <Flame className="w-5 h-5 text-primary" />
+            <div className="flex flex-col items-center gap-0.5 max-w-full">
+              {topTeams.length > 0 ? topTeams.map((name, i) => (
+                <span key={i} className="text-[11px] font-bold text-primary leading-tight truncate max-w-full">
+                  {name}{topTeamWins > 0 ? ` (${topTeamWins}G)` : ""}
+                </span>
+              )) : (
+                <span className="text-[11px] font-bold text-muted-foreground">--</span>
+              )}
+            </div>
+            <span className="text-[10px] text-muted-foreground text-center opacity-70">
+              EN İYİ TAKIM
             </span>
           </div>
         </section>

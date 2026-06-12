@@ -30,6 +30,19 @@ type User = {
   role: string;
 };
 
+type AdminMatch = {
+  id: string;
+  teamAName: string | null;
+  teamBName: string | null;
+  teamType: string;
+  winner: string | null;
+  status: string;
+  finishedAt: string | null;
+  lastEditedAt: string | null;
+  players: Array<{ user: { name: string }; team: string }>;
+  sets: Array<{ setNumber: number; teamAScore: number; teamBScore: number }>;
+};
+
 export function AdminPanel({
   currentUserEmail,
   seasons: initialSeasons,
@@ -43,8 +56,20 @@ export function AdminPanel({
   const [tab, setTab] = useState<"seasons" | "players" | "matches">("seasons");
   const [seasons, setSeasons] = useState(initialSeasons);
   const [users, setUsers] = useState(initialUsers);
+  const [matches, setMatches] = useState<AdminMatch[]>([]);
+  const [matchesLoaded, setMatchesLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  async function loadMatches() {
+    if (matchesLoaded) return;
+    const res = await fetch("/api/matches?all=true");
+    if (res.ok) {
+      const data = await res.json();
+      setMatches(data.matches);
+    }
+    setMatchesLoaded(true);
+  }
 
   const [newSeasonName, setNewSeasonName] = useState("");
   const [editingSeason, setEditingSeason] = useState<string | null>(null);
@@ -354,11 +379,86 @@ export function AdminPanel({
         )}
 
         {tab === "matches" && (
-          <div className="glass-surface border border-border/50 rounded-xl p-8 text-center text-muted-foreground">
-            <p className="text-sm">Maç yönetimi yakında eklenecek.</p>
-            <p className="text-xs mt-2 opacity-70">
-              Maçları düzenleme ve silme özelliği burada olacak.
-            </p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={loadMatches}
+              className="w-full py-2 bg-surface border border-border/50 rounded-lg text-sm text-foreground active:scale-95 transition-transform"
+            >
+              {matchesLoaded ? `${matches.length} maç yüklendi` : "Maçları Yükle"}
+            </button>
+
+            {matches.length === 0 && matchesLoaded && (
+              <div className="glass-surface border border-border/50 rounded-xl p-8 text-center text-muted-foreground">
+                <p className="text-sm">Henüz hiç maç yok.</p>
+              </div>
+            )}
+
+            {matches.map((m) => {
+              const teamA = m.teamAName || "Takım A";
+              const teamB = m.teamBName || "Takım B";
+              const setsA = m.sets.filter((s) => s.teamAScore > s.teamBScore).length;
+              const setsB = m.sets.filter((s) => s.teamBScore > s.teamAScore).length;
+              const playersA = m.players.filter((p) => p.team === "A").map((p) => p.user.name).join(", ");
+              const playersB = m.players.filter((p) => p.team === "B").map((p) => p.user.name).join(", ");
+
+              return (
+                <div
+                  key={m.id}
+                  className={`glass-surface border rounded-xl p-4 ${
+                    m.status === "LIVE" ? "border-primary/30" : "border-border/50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                        m.status === "FINISHED"
+                          ? "bg-primary/10 text-primary"
+                          : "bg-team-b/10 text-team-b"
+                      }`}>
+                        {m.status === "FINISHED" ? "BİTTİ" : "CANLI"}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {m.finishedAt ? new Date(m.finishedAt).toLocaleDateString("tr-TR") : "-"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <a
+                        href={`/match/${m.id}`}
+                        className="text-[10px] text-primary font-mono font-bold uppercase"
+                      >
+                        Detay
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <p className="text-sm font-bold text-primary">{teamA}</p>
+                      <p className="text-[10px] text-muted-foreground">{playersA}</p>
+                    </div>
+                    <span className="font-heading text-lg font-bold px-4">
+                      <span className={m.winner === "A" ? "text-primary" : "text-muted-foreground opacity-50"}>
+                        {setsA}
+                      </span>
+                      <span className="text-muted-foreground opacity-30 mx-1">-</span>
+                      <span className={m.winner === "B" ? "text-team-b" : "text-muted-foreground opacity-50"}>
+                        {setsB}
+                      </span>
+                    </span>
+                    <div className="flex-1 text-right">
+                      <p className="text-sm font-bold text-team-b">{teamB}</p>
+                      <p className="text-[10px] text-muted-foreground">{playersB}</p>
+                    </div>
+                  </div>
+
+                  {m.lastEditedAt && (
+                    <p className="text-[10px] text-muted-foreground mt-2 text-center">
+                      Düzenlendi: {new Date(m.lastEditedAt).toLocaleString("tr-TR")}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </main>

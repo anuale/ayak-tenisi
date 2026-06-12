@@ -22,8 +22,8 @@ export async function PATCH(
     return NextResponse.json({ error: "Maç bulunamadı" }, { status: 404 });
   }
 
-  if (match.createdBy !== user?.id && user?.role !== "ADMIN") {
-    return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+  if (user?.role !== "ADMIN") {
+    return NextResponse.json({ error: "Sadece adminler düzenleyebilir" }, { status: 403 });
   }
 
   const body = await request.json();
@@ -35,6 +35,8 @@ export async function PATCH(
     if (teamBName !== undefined) data.teamBName = teamBName;
     if (winner !== undefined) data.winner = winner;
 
+    data.lastEditedAt = new Date();
+    data.lastEditedBy = session.user.email;
     if (Object.keys(data).length > 0) {
       await tx.match.update({ where: { id }, data });
     }

@@ -97,19 +97,21 @@ model Season {
 }
 
 model Match {
-  id         String      @id @default(cuid())
-  seasonId   String
-  season     Season      @relation(fields: [seasonId], references: [id])
-  teamType   TeamType
-  teamAName  String?
-  teamBName  String?
-  status     MatchStatus @default(LIVE)
-  winner     Team?
-  notes      String?
-  createdBy  String
-  creator    User        @relation("MatchCreatedBy", fields: [createdBy], references: [id])
-  createdAt  DateTime    @default(now())
-  finishedAt DateTime?
+  id           String      @id @default(cuid())
+  seasonId     String
+  season       Season      @relation(fields: [seasonId], references: [id])
+  teamType     TeamType
+  teamAName    String?
+  teamBName    String?
+  status       MatchStatus @default(LIVE)
+  winner       Team?
+  notes        String?
+  createdBy    String
+  creator      User        @relation("MatchCreatedBy", fields: [createdBy], references: [id])
+  createdAt    DateTime    @default(now())
+  finishedAt   DateTime?
+  lastEditedAt DateTime?
+  lastEditedBy String?
 
   players    MatchPlayer[]
   sets       Set[]
