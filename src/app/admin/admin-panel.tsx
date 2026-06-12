@@ -51,8 +51,6 @@ export function AdminPanel({
   const [editName, setEditName] = useState("");
 
   const [newPlayerName, setNewPlayerName] = useState("");
-  const [newPlayerEmail, setNewPlayerEmail] = useState("");
-  const [newPlayerPassword, setNewPlayerPassword] = useState("");
 
   async function api(url: string, opts?: RequestInit) {
     setMessage("");
@@ -115,21 +113,21 @@ export function AdminPanel({
   }
 
   async function createPlayer() {
-    if (!newPlayerName.trim() || !newPlayerEmail.trim()) return;
+    if (!newPlayerName.trim()) return;
+    const randomId = Math.random().toString(36).substring(2, 8);
+    const email = `${newPlayerName.toLowerCase().replace(/\s+/g, ".")}.${randomId}@demo.local`;
     const { ok, data } = await api("/api/admin/players", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: newPlayerName,
-        email: newPlayerEmail,
-        password: newPlayerPassword || undefined,
+        email,
+        password: "demo1234",
       }),
     });
     if (ok) {
       setUsers([...users, data.user]);
       setNewPlayerName("");
-      setNewPlayerEmail("");
-      setNewPlayerPassword("");
     }
     router.refresh();
   }
@@ -288,27 +286,16 @@ export function AdminPanel({
           <div className="flex flex-col gap-4">
             <div className="glass-surface border border-border/50 rounded-xl p-4 flex flex-col gap-3">
               <p className="text-sm font-medium text-foreground">
-                Demo Oyuncu Ekle
+                Oyuncu Ekle
+              </p>
+              <p className="text-[10px] text-muted-foreground -mt-2">
+                E-posta ve şifre otomatik oluşturulur. Sadece isim yazın.
               </p>
               <input
                 className="bg-surface-high border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
                 placeholder="İsim Soyisim"
                 value={newPlayerName}
                 onChange={(e) => setNewPlayerName(e.target.value)}
-              />
-              <input
-                className="bg-surface-high border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
-                placeholder="E-posta"
-                type="email"
-                value={newPlayerEmail}
-                onChange={(e) => setNewPlayerEmail(e.target.value)}
-              />
-              <input
-                className="bg-surface-high border border-border rounded-lg px-4 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
-                placeholder="Şifre (boş bırakılırsa otomatik)"
-                type="password"
-                value={newPlayerPassword}
-                onChange={(e) => setNewPlayerPassword(e.target.value)}
               />
               <button
                 onClick={createPlayer}

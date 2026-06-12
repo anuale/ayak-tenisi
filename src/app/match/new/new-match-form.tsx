@@ -244,14 +244,12 @@ function PlayerColumn({
                   isTeamA ? "left-0" : "right-0"
                 }`}
               />
-              <div
-                className={`flex items-center gap-3 ${
-                  isTeamA ? "" : "flex-row-reverse"
-                }`}
-              >
-                <div className="w-8 h-8 rounded-full bg-surface-high border border-white/10 flex items-center justify-center flex-shrink-0">
-                  <Users className="w-4 h-4 text-muted-foreground" />
-                </div>
+              <div className="flex items-center gap-3">
+                {!isTeamA && (
+                  <div className="w-8 h-8 rounded-full bg-surface-high border border-white/10 flex items-center justify-center flex-shrink-0">
+                    <Users className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                )}
                 {hidden ? (
                   <div className="text-muted-foreground text-sm">
                     3v3 için
@@ -261,13 +259,11 @@ function PlayerColumn({
                     name={`team${team}_player_${i + 1}`}
                     required
                     defaultValue=""
-                    className="w-full bg-transparent border-none text-foreground text-sm p-0 pr-4 focus:ring-0 outline-none cursor-pointer appearance-none"
+                    className="w-full bg-transparent border-none text-foreground text-sm p-0 pr-6 focus:ring-0 outline-none cursor-pointer appearance-none"
                     style={{
                       backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386948a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
                       backgroundRepeat: "no-repeat",
-                      backgroundPosition: isTeamA
-                        ? "right 0 center"
-                        : "left 0 center",
+                      backgroundPosition: "right 0 center",
                       backgroundSize: "1em",
                     }}
                   >
@@ -284,6 +280,11 @@ function PlayerColumn({
                       </option>
                     ))}
                   </select>
+                )}
+                {isTeamA && (
+                  <div className="w-8 h-8 rounded-full bg-surface-high border border-white/10 flex items-center justify-center flex-shrink-0">
+                    <Users className="w-4 h-4 text-muted-foreground" />
+                  </div>
                 )}
               </div>
             </div>
