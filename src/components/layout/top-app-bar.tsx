@@ -1,16 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { Trophy, Settings } from "lucide-react";
+import { Trophy, Settings, Shield } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 interface TopAppBarProps {
   showBack?: boolean;
   backHref?: string;
   title?: string;
+  isAdmin?: boolean;
 }
 
-export function TopAppBar({ showBack, backHref, title }: TopAppBarProps) {
+export function TopAppBar({ showBack, backHref, title, isAdmin }: TopAppBarProps) {
   const pathname = usePathname();
 
   return (
@@ -31,6 +32,15 @@ export function TopAppBar({ showBack, backHref, title }: TopAppBarProps) {
       )}
 
       <div className="flex items-center gap-1">
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="text-team-b hover:text-team-b/80 active:scale-95 transition-all p-1"
+            title="Admin Panel"
+          >
+            <Shield className="w-5 h-5" />
+          </Link>
+        )}
         <Link
           href="/settings"
           className="text-muted-foreground hover:text-foreground active:scale-95 transition-all p-1"

@@ -44,7 +44,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col min-h-screen max-w-lg md:max-w-4xl md:max-w-4xl mx-auto relative">
-      <TopAppBar title="AYAK TENİSİ SKOR" />
+      <TopAppBar title="AYAK TENİSİ SKOR" isAdmin={(session?.user as any)?.role === "ADMIN"} />
 
       <main className="flex-1 overflow-y-auto px-6 pt-6 pb-24 flex flex-col gap-8">
         {/* Welcome */}

@@ -1,3 +1,4 @@
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { TopAppBar } from "@/components/layout/top-app-bar";
 import { BottomNavBar } from "@/components/layout/bottom-nav-bar";
@@ -16,6 +17,7 @@ interface PlayerStats {
 }
 
 export default async function StandingsPage() {
+  const session = await auth();
   const activeSeason = await db.season.findFirst({
     where: { isActive: true },
     orderBy: { startDate: "desc" },
@@ -86,7 +88,7 @@ export default async function StandingsPage() {
 
   return (
     <div className="flex flex-col min-h-screen max-w-lg md:max-w-4xl mx-auto pb-24">
-      <TopAppBar title="AYAK TENİSİ SKOR" />
+      <TopAppBar title="AYAK TENİSİ SKOR" isAdmin={(session?.user as any)?.role === "ADMIN"} />
 
       <main className="flex-1 px-6 pt-6 flex flex-col gap-6">
         <div className="flex items-center justify-between">
