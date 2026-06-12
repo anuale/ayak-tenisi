@@ -1,0 +1,15 @@
+node_modules
+.git
+.github
+.next
+.coolify
+*.md
+!README.md
+.env
+.env.local
+.env.development
+.DS_Store
+*.log
+coverage
+.vercel
+src/generated

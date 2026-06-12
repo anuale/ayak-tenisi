@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 import { db } from "@/lib/db";
 import {
   Play,
