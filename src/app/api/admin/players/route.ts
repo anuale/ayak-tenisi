@@ -70,12 +70,16 @@ export async function PUT(request: Request) {
   const { userId } = await request.json();
   if (!userId) return NextResponse.json({ error: "Kullanıcı ID gerekli" }, { status: 400 });
 
-  const newPassword = Math.random().toString(36).slice(2, 10);
-  const hashedPassword = await bcrypt.hash(newPassword, 12);
+  const token = crypto.randomUUID();
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-  await db.user.update({ where: { id: userId }, data: { password: hashedPassword } });
+  await db.passwordResetToken.create({
+    data: { userId, token, expires },
+  });
 
-  return NextResponse.json({ password: newPassword, message: "Şifre sıfırlandı." });
+  const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL}/reset-password/${token}`;
+
+  return NextResponse.json({ resetUrl, message: "Şifre sıfırlama linki oluşturuldu." });
 }
 
 export async function DELETE(request: Request) {

@@ -43,8 +43,9 @@ model User {
   pointStats   PointStat[]
   createdSeasons Season[]   @relation("SeasonCreatedBy")
   createdMatches Match[]    @relation("MatchCreatedBy")
-  accounts     Account[]
-  sessions     Session[]
+  accounts           Account[]
+  sessions           Session[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Account {
@@ -73,6 +74,16 @@ model Session {
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expires   DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model VerificationToken {

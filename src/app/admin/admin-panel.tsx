@@ -177,8 +177,9 @@ export function AdminPanel({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId }),
     });
-    if (ok && data.password) {
-      alert(`${userName} için yeni şifre:\n\n${data.password}\n\nBu şifreyi oyuncuya iletin.`);
+    if (ok && data.resetUrl) {
+      await navigator.clipboard.writeText(data.resetUrl);
+      alert(`${userName} için şifre sıfırlama linki kopyalandı!\n\nLinki oyuncuya gönderin. Link 24 saat geçerli.\n\n${data.resetUrl}`);
     }
     router.refresh();
   }

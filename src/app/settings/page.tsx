@@ -2,6 +2,7 @@ import { auth, signOut } from "@/lib/auth";
 import { TopAppBar } from "@/components/layout/top-app-bar";
 import { BottomNavBar } from "@/components/layout/bottom-nav-bar";
 import { LogOut } from "lucide-react";
+import { ChangePasswordForm } from "./change-password-form";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,8 @@ export default async function SettingsPage() {
             </div>
           </div>
         </div>
+
+        <ChangePasswordForm />
 
         <form
           action={async () => {
