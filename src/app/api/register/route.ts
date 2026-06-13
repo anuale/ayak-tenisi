@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import zxcvbn from "zxcvbn";
 import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
@@ -13,9 +14,17 @@ export async function POST(request: Request) {
       );
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       return NextResponse.json(
-        { error: "Şifre en az 6 karakter olmalı." },
+        { error: "Şifre en az 8 karakter olmalı." },
+        { status: 400 },
+      );
+    }
+
+    const strength = zxcvbn(password);
+    if (strength.score < 3) {
+      return NextResponse.json(
+        { error: `Şifre çok zayıf. ${strength.feedback.warning || "Daha karmaşık bir şifre seçin."}` },
         { status: 400 },
       );
     }

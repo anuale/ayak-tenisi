@@ -24,8 +24,8 @@ export function ChangePasswordForm() {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setError("Yeni şifre en az 6 karakter olmalı.");
+    if (newPassword.length < 8) {
+      setError("Yeni şifre en az 8 karakter olmalı.");
       setIsLoading(false);
       return;
     }

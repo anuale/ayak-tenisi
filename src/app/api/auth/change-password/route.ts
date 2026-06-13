@@ -15,8 +15,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Mevcut ve yeni şifre gerekli" }, { status: 400 });
   }
 
-  if (newPassword.length < 6) {
-    return NextResponse.json({ error: "Yeni şifre en az 6 karakter olmalı." }, { status: 400 });
+  if (newPassword.length < 8) {
+    return NextResponse.json({ error: "Yeni şifre en az 8 karakter olmalı." }, { status: 400 });
   }
 
   const user = await db.user.findUnique({ where: { email: session.user.email } });

@@ -26,8 +26,8 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Şifre en az 6 karakter olmalı.");
+    if (password.length < 8) {
+      setError("Şifre en az 8 karakter olmalı.");
       setIsLoading(false);
       return;
     }

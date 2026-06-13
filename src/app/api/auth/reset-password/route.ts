@@ -9,8 +9,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Eksik bilgi" }, { status: 400 });
   }
 
-  if (password.length < 6) {
-    return NextResponse.json({ error: "Şifre en az 6 karakter olmalı." }, { status: 400 });
+  if (password.length < 8) {
+    return NextResponse.json({ error: "Şifre en az 8 karakter olmalı." }, { status: 400 });
   }
 
   const resetToken = await db.passwordResetToken.findUnique({ where: { token } });
