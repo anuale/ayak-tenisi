@@ -11,6 +11,7 @@ import {
   Shield,
   UserMinus,
   ArrowLeft,
+  KeyRound,
 } from "lucide-react";
 import Link from "next/link";
 import { BottomNavBar } from "@/components/layout/bottom-nav-bar";
@@ -166,6 +167,18 @@ export function AdminPanel({
     });
     if (ok) {
       setUsers(users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
+    }
+    router.refresh();
+  }
+
+  async function resetPassword(userId: string, userName: string) {
+    const { ok, data } = await api(`/api/admin/players`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+    });
+    if (ok && data.password) {
+      alert(`${userName} için yeni şifre:\n\n${data.password}\n\nBu şifreyi oyuncuya iletin.`);
     }
     router.refresh();
   }
@@ -364,6 +377,13 @@ export function AdminPanel({
                       }
                     >
                       <Shield className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => resetPassword(u.id, u.name)}
+                      className="p-1 text-muted-foreground hover:text-primary transition-colors"
+                      title="Şifre sıfırla"
+                    >
+                      <KeyRound className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => deletePlayer(u.id)}

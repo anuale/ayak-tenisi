@@ -63,6 +63,21 @@ export async function PATCH(request: Request) {
   return NextResponse.json({ message: "Rol güncellendi." });
 }
 
+export async function PUT(request: Request) {
+  const admin = await checkAdmin();
+  if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
+
+  const { userId } = await request.json();
+  if (!userId) return NextResponse.json({ error: "Kullanıcı ID gerekli" }, { status: 400 });
+
+  const newPassword = Math.random().toString(36).slice(2, 10);
+  const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+  await db.user.update({ where: { id: userId }, data: { password: hashedPassword } });
+
+  return NextResponse.json({ password: newPassword, message: "Şifre sıfırlandı." });
+}
+
 export async function DELETE(request: Request) {
   const admin = await checkAdmin();
   if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
