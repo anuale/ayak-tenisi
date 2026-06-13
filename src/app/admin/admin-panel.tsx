@@ -178,7 +178,7 @@ export function AdminPanel({
   }
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg md:max-w-4xl mx-auto pb-24">
+    <div className="flex flex-col min-h-screen w-full md:max-w-4xl mx-auto pb-24">
       <header className="flex items-center gap-3 px-6 py-4 border-b border-border/50">
         <Link
           href="/"

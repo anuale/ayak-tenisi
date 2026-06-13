@@ -89,7 +89,7 @@ export function NewMatchForm({
   const playerCount = teamType === "TWO_VS_TWO" ? 2 : 3;
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg md:max-w-4xl mx-auto pb-32">
+    <div className="flex flex-col min-h-screen w-full md:max-w-4xl mx-auto pb-32">
       <header className="flex items-center justify-between px-6 py-4">
         <Link
           href="/"
@@ -203,7 +203,7 @@ export function NewMatchForm({
         </form>
       </div>
 
-      <div className="fixed bottom-0 w-full max-w-lg md:max-w-4xl left-1/2 -translate-x-1/2 p-6 bg-gradient-to-t from-background via-background/90 to-transparent pb-6 z-50">
+      <div className="fixed bottom-0 w-full w-full md:max-w-4xl left-1/2 -translate-x-1/2 p-6 bg-gradient-to-t from-background via-background/90 to-transparent pb-6 z-50">
         <button
           type="submit"
           form="match-form"
