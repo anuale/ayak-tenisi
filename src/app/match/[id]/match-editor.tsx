@@ -46,6 +46,8 @@ export function MatchEditor({
 
   function updateScore(set: number, team: "a" | "b", value: string) {
     if (!/^\d*$/.test(value)) return;
+    const num = parseInt(value);
+    if (value !== "" && (isNaN(num) || num > 50)) return;
     setScores((prev) => ({
       ...prev,
       [set]: { ...prev[set], [team]: value },
@@ -162,6 +164,7 @@ export function MatchEditor({
                 className="w-14 h-9 bg-surface-high border border-border rounded-lg text-center text-sm font-mono font-bold focus:border-primary focus:outline-none"
                 placeholder="0"
                 inputMode="numeric"
+                maxLength={2}
                 value={scores[setNum].a}
                 onChange={(e) => updateScore(setNum, "a", e.target.value)}
               />
@@ -170,6 +173,7 @@ export function MatchEditor({
                 className="w-14 h-9 bg-surface-high border border-border rounded-lg text-center text-sm font-mono font-bold focus:border-team-b focus:outline-none"
                 placeholder="0"
                 inputMode="numeric"
+                maxLength={2}
                 value={scores[setNum].b}
                 onChange={(e) => updateScore(setNum, "b", e.target.value)}
               />

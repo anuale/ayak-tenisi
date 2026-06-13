@@ -27,12 +27,13 @@ export async function PATCH(
   }
 
   const body = await request.json();
-  const { teamAName, teamBName, setScores, winner } = body;
+  const { teamAName, teamBName, playedAt, setScores, winner } = body;
 
   await db.$transaction(async (tx) => {
     const data: Record<string, unknown> = {};
     if (teamAName !== undefined) data.teamAName = teamAName;
     if (teamBName !== undefined) data.teamBName = teamBName;
+    if (playedAt !== undefined) data.playedAt = playedAt ? new Date(playedAt) : null;
     if (winner !== undefined) data.winner = winner;
 
     data.lastEditedAt = new Date();

@@ -25,6 +25,11 @@ export function NewMatchForm({
   const [error, setError] = useState("");
   const [teamAName, setTeamAName] = useState("");
   const [teamBName, setTeamBName] = useState("");
+  const [playedAt, setPlayedAt] = useState(() => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  });
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -65,6 +70,7 @@ export function NewMatchForm({
           teamType,
           teamAName: teamAName.trim(),
           teamBName: teamBName.trim(),
+          playedAt: playedAt ? new Date(playedAt).toISOString() : undefined,
           playersA,
           playersB,
         }),
@@ -134,6 +140,18 @@ export function NewMatchForm({
               3 VS 3
             </button>
           </div>
+        </div>
+
+        <div className="flex items-center gap-2 px-1">
+          <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
+            Maç Tarihi
+          </span>
+          <input
+            type="datetime-local"
+            className="flex-1 bg-surface-high border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
+            value={playedAt}
+            onChange={(e) => setPlayedAt(e.target.value)}
+          />
         </div>
 
         <form id="match-form" onSubmit={handleSubmit} className="flex flex-col gap-4 flex-1">

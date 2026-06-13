@@ -109,6 +109,7 @@ model Match {
   createdBy    String
   creator      User        @relation("MatchCreatedBy", fields: [createdBy], references: [id])
   createdAt    DateTime    @default(now())
+  playedAt     DateTime?
   finishedAt   DateTime?
   lastEditedAt DateTime?
   lastEditedBy String?

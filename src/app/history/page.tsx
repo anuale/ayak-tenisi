@@ -33,11 +33,11 @@ export default async function HistoryPage() {
           </div>
         ) : (
           matches.map((match) => {
-            const teamA = match.players
+            const teamA = match.teamAName || match.players
               .filter((p) => p.team === "A")
               .map((p) => p.user.name)
               .join(", ");
-            const teamB = match.players
+            const teamB = match.teamBName || match.players
               .filter((p) => p.team === "B")
               .map((p) => p.user.name)
               .join(", ");
@@ -58,6 +58,11 @@ export default async function HistoryPage() {
                   <p className="text-sm font-medium text-foreground truncate">
                     {teamA || "Takım A"}
                   </p>
+                  {match.playedAt && (
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      {new Date(match.playedAt).toLocaleDateString("tr-TR")}
+                    </p>
+                  )}
                 </div>
                 <div className="px-4 text-center">
                   <span

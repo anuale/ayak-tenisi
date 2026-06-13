@@ -56,17 +56,17 @@ export default async function MatchDetailPage({
       <main className="flex-1 px-6 flex flex-col gap-6">
         <div className="text-center">
           <span className="text-xs text-muted-foreground">{match.season.name}</span>
-          <p className="text-sm text-muted-foreground">
-            {match.finishedAt
-              ? new Date(match.finishedAt).toLocaleDateString("tr-TR", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : "Devam ediyor"}
-          </p>
+          {match.playedAt && (
+            <p className="text-sm text-muted-foreground">
+              {new Date(match.playedAt).toLocaleDateString("tr-TR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+          )}
         </div>
 
         <div className="glass-surface border border-border/50 rounded-xl p-6 text-center">

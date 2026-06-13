@@ -225,9 +225,11 @@ export default async function DashboardPage() {
                 const winner = match.winner;
                 const isTeamAWinner = winner === "A";
 
-                const timeAgo = match.finishedAt
-                  ? getTimeAgo(match.finishedAt)
-                  : "";
+                const matchDate = match.playedAt
+                  ? new Date(match.playedAt).toLocaleDateString("tr-TR")
+                  : match.finishedAt
+                    ? getTimeAgo(match.finishedAt)
+                    : "";
 
                 return (
                   <Link
@@ -269,7 +271,7 @@ export default async function DashboardPage() {
                         </span>
                       </div>
                       <span className="text-[10px] text-muted-foreground mt-1 opacity-50">
-                        {timeAgo}
+                        {matchDate}
                       </span>
                     </div>
                     <div className="flex-1 flex flex-col items-start">

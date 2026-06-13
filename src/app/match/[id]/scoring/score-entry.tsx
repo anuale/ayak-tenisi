@@ -38,6 +38,8 @@ export function ScoreEntry({
 
   function updateScore(set: number, team: "a" | "b", value: string) {
     if (!/^\d*$/.test(value)) return;
+    const num = parseInt(value);
+    if (value !== "" && (isNaN(num) || num > 50)) return;
     setScores((prev) => ({
       ...prev,
       [set]: { ...prev[set], [team]: value },
@@ -186,6 +188,7 @@ export function ScoreEntry({
                     value={scores[setNum].a}
                     onChange={(e) => updateScore(setNum, "a", e.target.value)}
                     inputMode="numeric"
+                    maxLength={2}
                   />
                   <span className="text-muted-foreground text-lg font-bold">-</span>
                   <input
@@ -194,6 +197,7 @@ export function ScoreEntry({
                     value={scores[setNum].b}
                     onChange={(e) => updateScore(setNum, "b", e.target.value)}
                     inputMode="numeric"
+                    maxLength={2}
                   />
                 </div>
               </div>
