@@ -36,9 +36,9 @@ export async function POST(request: Request) {
     const autoPassword = crypto.randomUUID().slice(0, 12) + "!A1";
     const hashedPassword = await bcrypt.hash(password || autoPassword, 12);
 
-  const user = await db.user.create({
-    data: { name, email, password: hashedPassword, role: "USER" },
-  });
+    const user = await db.user.create({
+      data: { name, email, password: hashedPassword, role: "USER", emailVerified: new Date() },
+    });
 
   return NextResponse.json({
     user: { id: user.id, name: user.name, email: user.email, role: user.role },

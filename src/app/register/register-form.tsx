@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
-import { Trophy, ArrowRight, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Trophy, ArrowRight, Loader2, Mail } from "lucide-react";
 import Link from "next/link";
 
 export function RegisterForm() {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   async function handleSubmit(formData: FormData) {
     setError("");
+    setSuccess("");
+    setIsPending(true);
 
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
@@ -42,21 +42,29 @@ export function RegisterForm() {
       return;
     }
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    setSuccess("Hesabınız oluşturuldu! Lütfen e-posta adresinizi doğrulamak için gelen kutunuzu kontrol edin.");
+  }
 
-    if (result?.error) {
-      setError("Kayıt başarılı fakat giriş yapılamadı.");
-      return;
-    }
-
-    startTransition(() => {
-      router.push("/");
-      router.refresh();
-    });
+  if (success) {
+    return (
+      <div className="w-full max-w-md px-6 relative z-10 flex flex-col min-h-screen justify-center text-center">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/20 backdrop-blur-xl border border-primary/30 rounded-2xl mb-6 shadow-[0_0_30px_rgba(78,222,163,0.1)] mx-auto">
+          <Mail className="w-10 h-10 text-primary" />
+        </div>
+        <h1 className="font-heading text-2xl font-bold tracking-tighter mb-2">
+          Gelen Kutunuzu <span className="text-primary">Kontrol Edin</span>
+        </h1>
+        <p className="text-muted-foreground text-sm mb-6">
+          {success}
+        </p>
+        <Link
+          href="/login"
+          className="text-primary font-medium text-sm hover:text-primary/80"
+        >
+          Giriş sayfasına git →
+        </Link>
+      </div>
+    );
   }
 
   return (
