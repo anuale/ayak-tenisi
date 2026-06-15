@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 interface PlayerStats {
   userId: string;
@@ -101,9 +102,10 @@ export function StandingsTabs({
 
       {data.map((item, i) => {
         const name = "userId" in item ? (item as PlayerStats).name : (item as TeamStats).name;
+        const userId = "userId" in item ? (item as PlayerStats).userId : null;
         return (
           <div
-            key={"userId" in item ? (item as PlayerStats).userId : (item as TeamStats).name}
+            key={userId || name}
             className={`glass-surface border border-border/50 rounded-xl p-4 border-l-4 ${medalColors(i)}`}
           >
             <div className="flex md:hidden items-center justify-between">
@@ -111,7 +113,13 @@ export function StandingsTabs({
                 <span className="text-sm font-mono font-bold text-muted-foreground w-5">
                   {i + 1}
                 </span>
-                <span className="text-sm font-medium text-foreground">{name}</span>
+                {userId ? (
+                  <Link href={`/players/${userId}`} className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                    {name}
+                  </Link>
+                ) : (
+                  <span className="text-sm font-medium text-foreground">{name}</span>
+                )}
               </div>
               <span className="font-heading text-lg font-bold text-primary">
                 {item.points}
@@ -120,7 +128,13 @@ export function StandingsTabs({
             </div>
             <div className="hidden md:grid grid-cols-[40px_1fr_40px_40px_40px_40px_50px] gap-2 items-center">
               <span className="text-sm font-mono font-bold text-muted-foreground">{i + 1}</span>
-              <span className="text-sm font-medium text-foreground">{name}</span>
+              {userId ? (
+                <Link href={`/players/${userId}`} className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+                  {name}
+                </Link>
+              ) : (
+                <span className="text-sm font-medium text-foreground">{name}</span>
+              )}
               <span className="text-sm text-center text-foreground">{item.played}</span>
               <span className="text-sm text-center text-primary">{item.won}</span>
               <span className="text-sm text-center text-muted-foreground">{item.lost}</span>
