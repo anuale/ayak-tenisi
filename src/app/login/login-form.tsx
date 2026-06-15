@@ -120,10 +120,9 @@ export function LoginForm() {
 
           <div className="flex items-center justify-end mt-2 mb-4">
             <Link
-              href="#"
+              href="/forgot-password"
               className="text-sm text-primary hover:text-primary/80 transition-colors"
             >
-              href="/forgot-password"
               Şifremi Unuttum
             </Link>
           </div>
