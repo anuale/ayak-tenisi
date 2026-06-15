@@ -10,7 +10,6 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
-  const verified = searchParams.get("verified");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -58,11 +57,8 @@ export function LoginForm() {
             AYAK TENİSİ <span className="text-primary">SKOR</span>
           </h1>
           <p className="text-muted-foreground text-base">
-            {verified ? "E-postanız doğrulandı! Giriş yapabilirsiniz." : "Performansınızı takip edin."}
+            Performansınızı takip edin.
           </p>
-          {verified && (
-            <p className="text-primary text-sm mt-2">✅ E-posta doğrulama başarılı</p>
-          )}
       </div>
 
       <div className="bg-surface/30 backdrop-blur-xl border border-white/10 rounded-xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
