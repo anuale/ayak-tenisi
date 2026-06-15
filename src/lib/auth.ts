@@ -26,10 +26,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!user || !user.password) return null;
 
-        if (!user.emailVerified) {
-          throw new Error("Lütfen e-posta adresinizi doğrulayın. Gelen kutunuzu kontrol edin.");
-        }
-
         const isValid = await bcrypt.compare(
           credentials.password as string,
           user.password,
