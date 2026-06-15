@@ -48,13 +48,16 @@ export function AdminPanel({
   currentUserEmail,
   seasons: initialSeasons,
   users: initialUsers,
+  pendingUsers: initialPending,
 }: {
   currentUserEmail: string;
   seasons: Season[];
   users: User[];
+  pendingUsers: User[];
 }) {
   const router = useRouter();
   const [tab, setTab] = useState<"seasons" | "players" | "matches">("seasons");
+  const [pendingUsers, setPendingUsers] = useState(initialPending);
   const [seasons, setSeasons] = useState(initialSeasons);
   const [users, setUsers] = useState(initialUsers);
   const [matches, setMatches] = useState<AdminMatch[]>([]);
@@ -168,6 +171,26 @@ export function AdminPanel({
     if (ok) {
       setUsers(users.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
     }
+    router.refresh();
+  }
+
+  async function approveUser(userId: string) {
+    const { ok } = await api(`/api/admin/players`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, approve: true }),
+    });
+    if (ok) {
+      setPendingUsers(pendingUsers.filter(u => u.id !== userId));
+      setUsers([...users, ...pendingUsers.filter(u => u.id === userId).map(u => ({ ...u, emailVerified: new Date().toISOString() }))]);
+    }
+    router.refresh();
+  }
+
+  async function rejectUser(userId: string) {
+    if (!confirm("Bu üyelik talebini reddetmek istediğinize emin misiniz?")) return;
+    const { ok } = await api(`/api/admin/players?userId=${userId}`, { method: "DELETE" });
+    if (ok) setPendingUsers(pendingUsers.filter(u => u.id !== userId));
     router.refresh();
   }
 
@@ -323,6 +346,39 @@ export function AdminPanel({
 
         {tab === "players" && (
           <div className="flex flex-col gap-4">
+            {pendingUsers.length > 0 && (
+              <div className="bg-team-b/5 border border-team-b/20 rounded-xl p-4 flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-team-b animate-pulse" />
+                  <p className="text-sm font-medium text-team-b">
+                    {pendingUsers.length} Onay Bekleyen Üyelik
+                  </p>
+                </div>
+                {pendingUsers.map((u) => (
+                  <div key={u.id} className="flex items-center justify-between bg-surface/50 rounded-lg p-3">
+                    <div>
+                      <p className="text-sm text-foreground">{u.name}</p>
+                      <p className="text-[10px] text-muted-foreground">{u.email}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => approveUser(u.id)}
+                        className="px-3 py-1.5 bg-primary text-primary-foreground rounded-full text-xs font-bold active:scale-95 transition-transform"
+                      >
+                        Onayla
+                      </button>
+                      <button
+                        onClick={() => rejectUser(u.id)}
+                        className="px-3 py-1.5 bg-destructive/10 text-destructive rounded-full text-xs font-bold active:scale-95 transition-transform"
+                      >
+                        Reddet
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div className="glass-surface border border-border/50 rounded-xl p-4 flex flex-col gap-3">
               <p className="text-sm font-medium text-foreground">
                 Oyuncu Ekle

@@ -19,7 +19,13 @@ export default async function AdminPage() {
   });
 
   const users = await db.user.findMany({
+    where: { emailVerified: { not: null } },
     orderBy: { name: "asc" },
+  });
+
+  const pendingUsers = await db.user.findMany({
+    where: { emailVerified: null },
+    orderBy: { createdAt: "desc" },
   });
 
   return (
@@ -27,6 +33,7 @@ export default async function AdminPage() {
       currentUserEmail={session.user.email!}
       seasons={JSON.parse(JSON.stringify(seasons))}
       users={JSON.parse(JSON.stringify(users))}
+      pendingUsers={JSON.parse(JSON.stringify(pendingUsers))}
     />
   );
 }

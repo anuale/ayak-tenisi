@@ -22,7 +22,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
-  serverExternalPackages: ["@prisma/client", "@prisma/adapter-pg", "@auth/prisma-adapter", "prisma", "bcryptjs", "zxcvbn", "resend"],
+  serverExternalPackages: ["@prisma/client", "@prisma/adapter-pg", "@auth/prisma-adapter", "prisma", "bcryptjs", "zxcvbn"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

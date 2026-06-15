@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import zxcvbn from "zxcvbn";
 import crypto from "crypto";
-import { Resend } from "resend";
 import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
@@ -52,25 +51,8 @@ export async function POST(request: Request) {
       },
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.AUTH_URL || "http://localhost:3000";
-    const verifyUrl = `${appUrl}/api/auth/verify?token=${verifyToken}`;
-
-    if (process.env.RESEND_API_KEY) {
-      try {
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        await resend.emails.send({
-          from: "Ayak Tenisi Skor <noreply@alnuai.com>",
-          to: email,
-          subject: "E-posta Adresinizi Doğrulayın",
-          html: `<h2>Ayak Tenisi Skor'a Hoş Geldiniz!</h2><p>Hesabınızı aktifleştirmek için aşağıdaki bağlantıya tıklayın:</p><p><a href="${verifyUrl}">${verifyUrl}</a></p><p>Bu bağlantı 24 saat geçerlidir.</p>`,
-        });
-      } catch {
-        // Email sending failed, still allow registration
-      }
-    }
-
     return NextResponse.json(
-      { message: "Hesabınız oluşturuldu. Lütfen e-posta adresinizi doğrulayın." },
+      { message: "Hesabınız oluşturuldu. Admin onayı bekleniyor." },
       { status: 201 },
     );
   } catch {

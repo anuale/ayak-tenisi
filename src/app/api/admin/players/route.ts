@@ -56,8 +56,16 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Sadece ana admin rol değiştirebilir" }, { status: 403 });
   }
 
-  const { userId, role } = await request.json();
+  const { userId, role, approve } = await request.json();
   if (!userId) return NextResponse.json({ error: "Kullanıcı ID gerekli" }, { status: 400 });
+
+  if (approve) {
+    await db.user.update({
+      where: { id: userId },
+      data: { emailVerified: new Date(), verifyToken: null },
+    });
+    return NextResponse.json({ message: "Kullanıcı onaylandı." });
+  }
 
   await db.user.update({ where: { id: userId }, data: { role } });
 
