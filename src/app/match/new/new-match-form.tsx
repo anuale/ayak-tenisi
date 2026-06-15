@@ -142,24 +142,24 @@ export function NewMatchForm({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 px-1">
+        <div className="flex items-center gap-2">
           <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
-            Maç Tarihi
+            Tarih
           </span>
           <input
             type="datetime-local"
-            className="flex-1 bg-surface-high border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
+            className="flex-1 min-w-0 bg-surface-high border border-border rounded-lg px-2 py-2 text-xs text-foreground focus:border-primary focus:outline-none"
             value={playedAt}
             onChange={(e) => setPlayedAt(e.target.value)}
           />
         </div>
 
         <form id="match-form" onSubmit={handleSubmit} className="flex flex-col gap-4 flex-1">
-          <div className="flex gap-4 items-start">
-            <div className="flex-1 flex flex-col gap-3">
+          <div className="flex gap-2 items-start">
+            <div className="flex-1 min-w-0 flex flex-col gap-2">
               <input
-                className="bg-surface-high border border-border rounded-lg px-4 py-3 text-sm text-center text-primary font-bold placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-                placeholder="Takım A ismi"
+                className="bg-surface-high border border-border rounded-lg px-3 py-2.5 text-xs text-center text-primary font-bold placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                placeholder="Takım A"
                 value={teamAName}
                 onChange={(e) => setTeamAName(e.target.value)}
               />
@@ -171,16 +171,16 @@ export function NewMatchForm({
               />
             </div>
 
-            <div className="flex flex-col items-center justify-center pt-8">
-              <div className="w-8 h-8 rounded-full bg-surface border border-white/10 flex items-center justify-center">
-                <span className="font-heading text-sm text-foreground">VS</span>
+            <div className="flex items-center justify-center pt-6 flex-shrink-0">
+              <div className="w-6 h-6 rounded-full bg-surface border border-white/10 flex items-center justify-center">
+                <span className="text-[10px] font-heading font-bold text-foreground">VS</span>
               </div>
             </div>
 
-            <div className="flex-1 flex flex-col gap-3">
+            <div className="flex-1 min-w-0 flex flex-col gap-2">
               <input
-                className="bg-surface-high border border-border rounded-lg px-4 py-3 text-sm text-center text-team-b font-bold placeholder:text-muted-foreground focus:border-team-b focus:outline-none"
-                placeholder="Takım B ismi"
+                className="bg-surface-high border border-border rounded-lg px-3 py-2.5 text-xs text-center text-team-b font-bold placeholder:text-muted-foreground focus:border-team-b focus:outline-none"
+                placeholder="Takım B"
                 value={teamBName}
                 onChange={(e) => setTeamBName(e.target.value)}
               />
@@ -221,7 +221,7 @@ export function NewMatchForm({
         </form>
       </div>
 
-      <div className="fixed bottom-0 w-full w-full md:max-w-4xl left-1/2 -translate-x-1/2 p-6 bg-gradient-to-t from-background via-background/90 to-transparent pb-6 z-50">
+      <div className="fixed bottom-0 w-full md:max-w-4xl left-1/2 -translate-x-1/2 p-4 bg-gradient-to-t from-background via-background/90 to-transparent pb-6 z-50">
         <button
           type="submit"
           form="match-form"
@@ -263,7 +263,7 @@ function PlayerSelects({
         return (
           <div
             key={i}
-            className={`bg-surface/50 rounded-lg border border-white/5 p-3 flex flex-col gap-1 relative overflow-hidden transition-all ${
+            className={`bg-surface/50 rounded-lg border border-white/5 p-2 flex flex-col gap-0.5 relative overflow-hidden transition-all ${
               hidden ? "opacity-20" : ""
             }`}
           >
@@ -272,16 +272,16 @@ function PlayerSelects({
                 isTeamA ? "left-0" : "right-0"
               }`}
             />
-            <label className={`text-[10px] text-muted-foreground ${isTeamA ? "pl-2" : "pr-2 text-right"}`}>
+            <label className="text-[9px] text-muted-foreground pl-1">
               Oyuncu {i + 1}
             </label>
             {hidden ? (
-              <div className="text-muted-foreground text-xs px-2">3v3 için</div>
+              <div className="text-muted-foreground text-[10px] pl-1">3v3 için</div>
             ) : (
               <select
                 name={`team${team}_player_${i + 1}`}
                 defaultValue=""
-                className="w-full bg-transparent border-none text-foreground text-sm px-2 py-0 pr-6 focus:ring-0 outline-none cursor-pointer appearance-none"
+                className="w-full bg-transparent border-none text-foreground text-xs px-1 py-0 pr-5 focus:ring-0 outline-none cursor-pointer appearance-none truncate"
                 style={{
                   backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386948a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
                   backgroundRepeat: "no-repeat",
@@ -290,7 +290,7 @@ function PlayerSelects({
                 }}
               >
                 <option value="" disabled className="bg-surface text-foreground">
-                  Seçiniz
+                  Seç
                 </option>
                 {users.map((user) => (
                   <option key={user.id} value={user.id} className="bg-surface text-foreground">

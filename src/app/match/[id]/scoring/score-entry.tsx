@@ -144,7 +144,7 @@ export function ScoreEntry({
         <div className="w-10" />
       </header>
 
-      <main className="flex-1 px-6 pt-6 flex flex-col gap-6">
+      <main className="flex-1 px-4 pt-4 flex flex-col gap-4">
         <div className="text-center">
           <div className="flex items-center justify-center gap-4">
             <span className="text-lg font-bold text-primary">{teamAName}</span>
@@ -212,7 +212,7 @@ export function ScoreEntry({
         )}
       </main>
 
-      <div className="fixed bottom-0 w-full w-full md:max-w-4xl left-1/2 -translate-x-1/2 p-6 bg-gradient-to-t from-background via-background/90 to-transparent pb-6 z-50">
+      <div className="fixed bottom-0 w-full md:max-w-4xl left-1/2 -translate-x-1/2 p-4 bg-gradient-to-t from-background via-background/90 to-transparent pb-6 z-50">
         <button
           onClick={handleFinish}
           disabled={isSubmitting}
