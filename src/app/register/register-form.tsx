@@ -42,7 +42,7 @@ export function RegisterForm() {
       return;
     }
 
-    setSuccess("Hesabınız oluşturuldu! Lütfen e-posta adresinizi doğrulamak için gelen kutunuzu kontrol edin.");
+    setSuccess("Üyelik talebiniz oluşturuldu. Admin onayından sonra giriş yapabilirsiniz.");
   }
 
   if (success) {
