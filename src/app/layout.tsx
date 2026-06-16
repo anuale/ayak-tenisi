@@ -55,6 +55,11 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} ${anybody.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}`,
+          }}
+        />
         <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
