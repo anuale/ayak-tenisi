@@ -44,6 +44,7 @@ model User {
   pointStats   PointStat[]
   createdSeasons Season[]   @relation("SeasonCreatedBy")
   createdMatches Match[]    @relation("MatchCreatedBy")
+  createdTournaments Tournament[] @relation("TournamentCreatedBy")
   accounts           Account[]
   sessions           Session[]
   passwordResetTokens PasswordResetToken[]
@@ -105,7 +106,8 @@ model Season {
   creator   User      @relation("SeasonCreatedBy", fields: [createdBy], references: [id])
   createdAt DateTime  @default(now())
 
-  matches   Match[]
+  matches     Match[]
+  tournaments Tournament[]
 }
 
 model Match {
@@ -115,6 +117,8 @@ model Match {
   teamType     TeamType
   teamAName    String?
   teamBName    String?
+  tournamentId String?
+  tournament   Tournament? @relation(fields: [tournamentId], references: [id])
   status       MatchStatus @default(LIVE)
   winner       Team?
   notes        String?
@@ -129,6 +133,20 @@ model Match {
   players    MatchPlayer[]
   sets       Set[]
   points     PointStat[]
+}
+
+model Tournament {
+  id        String   @id @default(cuid())
+  name      String
+  seasonId  String
+  season    Season   @relation(fields: [seasonId], references: [id])
+  teamType  TeamType
+  createdBy String
+  creator   User     @relation("TournamentCreatedBy", fields: [createdBy], references: [id])
+  createdAt DateTime @default(now())
+  finishedAt DateTime?
+
+  matches   Match[]
 }
 
 model MatchPlayer {
