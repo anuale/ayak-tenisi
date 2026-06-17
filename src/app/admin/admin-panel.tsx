@@ -505,6 +505,19 @@ export function AdminPanel({
                       >
                         Detay
                       </a>
+                      <button
+                        onClick={async () => {
+                          if (!confirm("Bu maçı silmek istediğinize emin misiniz?")) return;
+                          const res = await fetch(`/api/matches/${m.id}`, { method: "DELETE" });
+                          if (res.ok) {
+                            setMatches(matches.filter(x => x.id !== m.id));
+                            setMessage("Maç silindi.");
+                          }
+                        }}
+                        className="text-[10px] text-destructive font-mono font-bold uppercase ml-2"
+                      >
+                        Sil
+                      </button>
                     </div>
                   </div>
 

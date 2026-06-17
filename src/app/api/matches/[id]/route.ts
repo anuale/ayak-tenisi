@@ -2,6 +2,25 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+  }
+  const user = await db.user.findUnique({
+    where: { email: session.user.email },
+  });
+  if (user?.role !== "ADMIN") {
+    return NextResponse.json({ error: "Sadece adminler silebilir" }, { status: 403 });
+  }
+  const { id } = await params;
+  await db.match.delete({ where: { id } });
+  return NextResponse.json({ success: true });
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

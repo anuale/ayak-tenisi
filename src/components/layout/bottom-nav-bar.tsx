@@ -8,7 +8,7 @@ const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/standings", label: "Standings", icon: Trophy },
   { href: "/tournament", label: "Turnuva", icon: Swords },
-  { href: "/history", label: "History", icon: Clock },
+  { href: "/history", label: "Maçlar", icon: Clock },
   { href: "/settings", label: "Profile", icon: User },
 ];
 

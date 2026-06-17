@@ -28,13 +28,13 @@ export default async function DashboardPage() {
   });
 
   const allRecentMatches = await db.match.findMany({
-    where: { status: { in: ["FINISHED", "LIVE"] } },
+    where: { status: "FINISHED" },
     include: {
       players: { include: { user: { select: { name: true } } } },
       sets: { orderBy: { setNumber: "asc" } },
     },
-    orderBy: { createdAt: "desc" },
-    take: 8,
+    orderBy: { finishedAt: "desc" },
+    take: 5,
   });
 
   const activePlayersCount = await db.user.count();
@@ -94,7 +94,9 @@ export default async function DashboardPage() {
     <div className="flex flex-col min-h-screen w-full md:max-w-4xl mx-auto relative">
       <TopAppBar title="AYAK TENİSİ SKOR" isAdmin={(session?.user as any)?.role === "ADMIN"} />
 
-      <main className="flex-1 overflow-y-auto px-6 pt-6 pb-24 flex flex-col gap-8">
+      <main className="flex-1 overflow-y-auto px-4 pt-4 pb-24 flex flex-col gap-6">
+        <InstallPWA />
+
         {/* Welcome */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
