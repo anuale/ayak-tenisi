@@ -21,6 +21,7 @@ export default async function MatchDetailPage({
     include: {
       players: { include: { user: { select: { id: true, name: true } } } },
       sets: { orderBy: { setNumber: "asc" } },
+      points: { include: { user: { select: { name: true } } } },
       season: { select: { name: true } },
     },
   });
@@ -128,6 +129,25 @@ export default async function MatchDetailPage({
             ))}
           </div>
         </div>
+
+        {match.points.length > 0 && (
+          <div className="glass-surface border border-border/50 rounded-xl p-4">
+            <h3 className="text-xs font-mono font-bold text-muted-foreground uppercase tracking-widest mb-4">
+              Oyuncu Sayıları
+            </h3>
+            <div className="flex flex-col gap-2">
+              {match.points.map((pt, i) => (
+                <div key={i} className="flex items-center justify-between px-3 py-2 bg-surface/50 rounded-lg">
+                  <span className="text-sm text-foreground">{pt.user.name}</span>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span>Set {pt.setNumber}</span>
+                    <span className="font-bold text-foreground">{pt.pointsWon} sayı</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {match.lastEditedAt && (
           <p className="text-[10px] text-muted-foreground text-center">

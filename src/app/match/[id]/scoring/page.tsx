@@ -24,5 +24,16 @@ export default async function ScoringPage({
   const teamA = match.teamAName || match.players.filter(p => p.team === "A").map(p => p.user.name).join(", ");
   const teamB = match.teamBName || match.players.filter(p => p.team === "B").map(p => p.user.name).join(", ");
 
-  return <ScoreEntry match={match} teamAName={teamA} teamBName={teamB} />;
+  const teamAPlayers = match.players.filter(p => p.team === "A").map(p => ({ id: p.user.id, name: p.user.name }));
+  const teamBPlayers = match.players.filter(p => p.team === "B").map(p => ({ id: p.user.id, name: p.user.name }));
+
+  return (
+    <ScoreEntry
+      match={match}
+      teamAName={teamA}
+      teamBName={teamB}
+      teamAPlayers={teamAPlayers}
+      teamBPlayers={teamBPlayers}
+    />
+  );
 }

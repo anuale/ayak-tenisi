@@ -13,7 +13,7 @@ export async function POST(
 
   const { id } = await params;
   const body = await request.json();
-  const { setScores, winner } = body;
+  const { setScores, winner, playerPoints } = body;
 
   const match = await db.match.findUnique({ where: { id } });
   if (!match || match.status !== "LIVE") {
@@ -32,6 +32,24 @@ export async function POST(
           teamBScore: setScore.teamB,
         },
       });
+    }
+
+    if (playerPoints && Array.isArray(playerPoints)) {
+      await tx.pointStat.deleteMany({ where: { matchId: id } });
+      for (const pp of playerPoints) {
+        if (pp.pointsWon > 0) {
+          await tx.pointStat.create({
+            data: {
+              matchId: id,
+              userId: pp.userId,
+              setNumber: pp.setNumber,
+              pointsWon: pp.pointsWon,
+              pointsLost: pp.pointsLost || 0,
+              team: pp.team,
+            },
+          });
+        }
+      }
     }
 
     await tx.match.update({
