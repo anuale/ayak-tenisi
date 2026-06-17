@@ -114,7 +114,7 @@ model Match {
   id           String      @id @default(cuid())
   seasonId     String
   season       Season      @relation(fields: [seasonId], references: [id])
-  teamType     TeamType
+  teamType     String    @default("2v2")
   teamAName    String?
   teamBName    String?
   tournamentId String?
@@ -140,7 +140,7 @@ model Tournament {
   name      String
   seasonId  String
   season    Season   @relation(fields: [seasonId], references: [id])
-  teamType  TeamType
+  teamType  String    @default("2v2")
   createdBy String
   creator   User     @relation("TournamentCreatedBy", fields: [createdBy], references: [id])
   createdAt DateTime @default(now())

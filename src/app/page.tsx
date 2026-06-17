@@ -12,18 +12,29 @@ import {
 import { TopAppBar } from "@/components/layout/top-app-bar";
 import { BottomNavBar } from "@/components/layout/bottom-nav-bar";
 import { signOut } from "@/lib/auth";
+import { InstallPWA } from "@/components/ui/install-pwa";
 
 export default async function DashboardPage() {
   const session = await auth();
 
-  const recentMatches = await db.match.findMany({
-    where: { status: "FINISHED" },
+  const draftMatches = await db.match.findMany({
+    where: { status: "LIVE", createdBy: session?.user?.id || "" },
     include: {
       players: { include: { user: { select: { name: true } } } },
       sets: { orderBy: { setNumber: "asc" } },
     },
-    orderBy: { finishedAt: "desc" },
+    orderBy: { createdAt: "desc" },
     take: 5,
+  });
+
+  const allRecentMatches = await db.match.findMany({
+    where: { status: { in: ["FINISHED", "LIVE"] } },
+    include: {
+      players: { include: { user: { select: { name: true } } } },
+      sets: { orderBy: { setNumber: "asc" } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 8,
   });
 
   const activePlayersCount = await db.user.count();
@@ -172,7 +183,7 @@ export default async function DashboardPage() {
               )}
             </div>
             <span className="text-[10px] text-muted-foreground text-center opacity-70">
-              EN İYİ TAKIM
+              EN ÇOK KAZANAN
             </span>
           </div>
         </section>
@@ -191,7 +202,7 @@ export default async function DashboardPage() {
             </Link>
           </div>
 
-          {recentMatches.length === 0 ? (
+          {allRecentMatches.length === 0 ? (
             <div className="glass-surface border border-border/50 rounded-xl p-8 text-center text-muted-foreground">
               <p className="text-sm">Henüz hiç maç oynanmadı.</p>
               <Link
@@ -203,7 +214,7 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              {recentMatches.map((match) => {
+              {allRecentMatches.map((match) => {
                 const teamA = match.teamAName || match.players
                   .filter((p) => p.team === "A")
                   .map((p) => p.user.name)

@@ -15,7 +15,7 @@ export function TopAppBar({ showBack, backHref, title, isAdmin }: TopAppBarProps
   const pathname = usePathname();
 
   return (
-    <header className="bg-background/50 backdrop-blur-xl border-b border-border/50 flex justify-between items-center px-6 h-12 sticky top-0 w-full z-50 w-full md:max-w-4xl mx-auto">
+    <header className="bg-background/50 backdrop-blur-xl border-b border-border/50 flex justify-between items-center px-6 sticky top-0 w-full z-50 w-full md:max-w-4xl mx-auto" style={{ minHeight: "48px", paddingTop: "max(env(safe-area-inset-top), 0px)" }}>
       <div className="flex items-center gap-2">
         <Link
           href="/"

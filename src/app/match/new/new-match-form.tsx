@@ -18,9 +18,8 @@ export function NewMatchForm({
   seasonId: string;
 }) {
   const router = useRouter();
-  const [teamType, setTeamType] = useState<"TWO_VS_TWO" | "THREE_VS_THREE">(
-    "TWO_VS_TWO",
-  );
+  const [teamASize, setTeamASize] = useState(2);
+  const [teamBSize, setTeamBSize] = useState(2);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [teamAName, setTeamAName] = useState("");
@@ -31,6 +30,10 @@ export function NewMatchForm({
     return now.toISOString().slice(0, 16);
   });
 
+  const maxPlayers = 5;
+  const minPlayers = 1;
+  const teamType = `${teamASize}v${teamBSize}`;
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
@@ -40,10 +43,12 @@ export function NewMatchForm({
     const playersA: string[] = [];
     const playersB: string[] = [];
 
-    for (let i = 1; i <= (teamType === "TWO_VS_TWO" ? 2 : 3); i++) {
+    for (let i = 1; i <= teamASize; i++) {
       const a = formData.get(`teamA_player_${i}`);
-      const b = formData.get(`teamB_player_${i}`);
       if (a) playersA.push(a as string);
+    }
+    for (let i = 1; i <= teamBSize; i++) {
+      const b = formData.get(`teamB_player_${i}`);
       if (b) playersB.push(b as string);
     }
 
@@ -109,36 +114,20 @@ export function NewMatchForm({
         <div className="w-10" />
       </header>
 
-      <div className="flex-1 px-6 flex flex-col gap-5 mt-2">
-        <div className="w-full flex justify-center">
-          <div className="bg-surface/50 backdrop-blur-md rounded-full p-1 flex border border-white/10 relative w-64">
-            <div
-              className={`absolute left-1 top-1 bottom-1 w-[calc(50%-4px)] bg-surface-high rounded-full border border-white/10 transition-transform duration-300 ${
-                teamType === "THREE_VS_THREE" ? "translate-x-full" : ""
-              }`}
-            />
-            <button
-              type="button"
-              onClick={() => setTeamType("TWO_VS_TWO")}
-              className={`flex-1 py-2 relative z-10 text-xs font-mono font-bold tracking-widest transition-colors ${
-                teamType === "TWO_VS_TWO"
-                  ? "text-foreground"
-                  : "text-muted-foreground"
-              }`}
-            >
-              2 VS 2
-            </button>
-            <button
-              type="button"
-              onClick={() => setTeamType("THREE_VS_THREE")}
-              className={`flex-1 py-2 relative z-10 text-xs font-mono font-bold tracking-widest transition-colors ${
-                teamType === "THREE_VS_THREE"
-                  ? "text-foreground"
-                  : "text-muted-foreground"
-              }`}
-            >
-              3 VS 3
-            </button>
+      <div className="flex-1 px-4 flex flex-col gap-4 mt-2">
+        <div className="flex items-center gap-3 justify-center">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Takım A</span>
+            <button onClick={() => setTeamASize(Math.max(minPlayers, teamASize - 1))} className="w-7 h-7 rounded-full bg-surface border border-border/50 text-sm">−</button>
+            <span className="text-sm font-bold text-primary w-4 text-center">{teamASize}</span>
+            <button onClick={() => setTeamASize(Math.min(maxPlayers, teamASize + 1))} className="w-7 h-7 rounded-full bg-surface border border-border/50 text-sm">+</button>
+          </div>
+          <span className="text-muted-foreground text-sm font-bold">VS</span>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setTeamBSize(Math.max(minPlayers, teamBSize - 1))} className="w-7 h-7 rounded-full bg-surface border border-border/50 text-sm">−</button>
+            <span className="text-sm font-bold text-team-b w-4 text-center">{teamBSize}</span>
+            <button onClick={() => setTeamBSize(Math.min(maxPlayers, teamBSize + 1))} className="w-7 h-7 rounded-full bg-surface border border-border/50 text-sm">+</button>
+            <span className="text-xs text-muted-foreground">Takım B</span>
           </div>
         </div>
 
@@ -165,8 +154,7 @@ export function NewMatchForm({
               />
               <PlayerSelects
                 team="A"
-                accentColor="team-a"
-                playerCount={playerCount}
+                count={teamASize}
                 users={users}
               />
             </div>
@@ -186,8 +174,7 @@ export function NewMatchForm({
               />
               <PlayerSelects
                 team="B"
-                accentColor="team-b"
-                playerCount={playerCount}
+                count={teamBSize}
                 users={users}
               />
             </div>
@@ -199,7 +186,7 @@ export function NewMatchForm({
                 FORMAT
               </span>
               <span className="font-heading text-lg font-bold text-foreground">
-                {teamType === "TWO_VS_TWO" ? "2v2" : "3v3"}
+                {teamType}
               </span>
             </div>
             <div className="h-8 w-[1px] bg-white/10" />
@@ -244,13 +231,11 @@ export function NewMatchForm({
 
 function PlayerSelects({
   team,
-  accentColor,
-  playerCount,
+  count,
   users,
 }: {
   team: "A" | "B";
-  accentColor: string;
-  playerCount: number;
+  count: number;
   users: UserOption[];
 }) {
   const isTeamA = team === "A";
@@ -258,14 +243,10 @@ function PlayerSelects({
 
   return (
     <div className="flex flex-col gap-2">
-      {Array.from({ length: 3 }).map((_, i) => {
-        const hidden = i >= playerCount;
-        return (
+      {Array.from({ length: count }).map((_, i) => (
           <div
             key={i}
-            className={`bg-surface/50 rounded-lg border border-white/5 p-2 flex flex-col gap-0.5 relative overflow-hidden transition-all ${
-              hidden ? "opacity-20" : ""
-            }`}
+            className="bg-surface/50 rounded-lg border border-white/5 p-2 flex flex-col gap-0.5 relative overflow-hidden"
           >
             <div
               className={`absolute top-0 w-1 h-full opacity-50 ${barColor} ${
@@ -275,33 +256,28 @@ function PlayerSelects({
             <label className="text-[9px] text-muted-foreground pl-1">
               Oyuncu {i + 1}
             </label>
-            {hidden ? (
-              <div className="text-muted-foreground text-[10px] pl-1">3v3 için</div>
-            ) : (
-              <select
-                name={`team${team}_player_${i + 1}`}
-                defaultValue=""
-                className="w-full bg-transparent border-none text-foreground text-xs px-1 py-0 pr-5 focus:ring-0 outline-none cursor-pointer appearance-none truncate"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386948a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "right 0 center",
-                  backgroundSize: "1em",
-                }}
-              >
-                <option value="" disabled className="bg-surface text-foreground">
-                  Seç
+            <select
+              name={`team${team}_player_${i + 1}`}
+              defaultValue=""
+              className="w-full bg-transparent border-none text-foreground text-xs px-1 py-0 pr-5 focus:ring-0 outline-none cursor-pointer appearance-none truncate"
+              style={{
+                backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386948a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 0 center",
+                backgroundSize: "1em",
+              }}
+            >
+              <option value="" disabled className="bg-surface text-foreground">
+                Seç
+              </option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id} className="bg-surface text-foreground">
+                  {user.name}
                 </option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id} className="bg-surface text-foreground">
-                    {user.name}
-                  </option>
-                ))}
-              </select>
-            )}
+              ))}
+            </select>
           </div>
-        );
-      })}
+        ))}
     </div>
   );
 }
