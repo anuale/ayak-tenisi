@@ -2,8 +2,15 @@ const CACHE_VERSION = "ayak-tenisi-v3";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 
-self.addEventListener("install", (event) => {
+self.addEventListener("install", () => {
   self.skipWaiting();
+  self.clients.matchAll().then((clients) => {
+    clients.forEach((client) => client.postMessage({ type: "UPDATE_AVAILABLE" }));
+  });
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {

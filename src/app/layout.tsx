@@ -57,7 +57,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <script
           dangerouslySetInnerHTML={{
-            __html: `if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}`,
+            __html: `if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(function(reg){reg.addEventListener('updatefound',function(){var w=reg.installing;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller){var e=document.createElement('div');e.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;background:#4edea3;color:#003824;padding:10px 20px;border-radius:50px;font-size:13px;font-weight:bold;cursor:pointer;box-shadow:0 4px 20px rgba(78,222,163,0.4)';e.textContent='Yeni sürüm var, yenile ↻';e.onclick=function(){w.postMessage('SKIP_WAITING');location.reload()};document.body.appendChild(e);setTimeout(function(){e.remove()},15000)}})})}).catch(function(){})}`,
           }}
         />
         <SessionProvider>{children}</SessionProvider>
