@@ -5,6 +5,7 @@ import { BottomNavBar } from "@/components/layout/bottom-nav-bar";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { MatchEditor } from "./match-editor";
+import { DeleteMatchButton } from "./delete-match-button";
 
 export const dynamic = "force-dynamic";
 
@@ -164,6 +165,7 @@ export default async function MatchDetailPage({
               sets={JSON.parse(JSON.stringify(match.sets))}
               winner={match.winner}
             />
+            <DeleteMatchButton matchId={match.id} />
           </div>
         )}
       </main>

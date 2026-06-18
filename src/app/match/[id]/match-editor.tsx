@@ -130,7 +130,7 @@ export function MatchEditor({
   }
 
   return (
-    <div className="glass-surface border border-border/50 rounded-xl p-4 flex flex-col gap-4">
+    <div className="glass-surface border border-border/50 rounded-xl p-3 flex flex-col gap-3 overflow-hidden">
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-mono font-bold text-muted-foreground uppercase tracking-widest">
           Skorları Düzenle
@@ -140,40 +140,36 @@ export function MatchEditor({
         </button>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         <input
-          className="flex-1 bg-surface-high border border-border rounded-lg px-3 py-2 text-sm text-center text-primary font-bold focus:border-primary focus:outline-none"
+          className="min-w-0 flex-1 bg-surface-high border border-border rounded-lg px-2 py-2 text-xs text-center text-primary font-bold focus:border-primary focus:outline-none"
           value={teamAName}
           onChange={(e) => setTeamAName(e.target.value)}
         />
-        <span className="text-muted-foreground self-center">VS</span>
+        <span className="text-muted-foreground self-center text-xs">VS</span>
         <input
-          className="flex-1 bg-surface-high border border-border rounded-lg px-3 py-2 text-sm text-center text-team-b font-bold focus:border-team-b focus:outline-none"
+          className="min-w-0 flex-1 bg-surface-high border border-border rounded-lg px-2 py-2 text-xs text-center text-team-b font-bold focus:border-team-b focus:outline-none"
           value={teamBName}
           onChange={(e) => setTeamBName(e.target.value)}
         />
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1.5">
         {Array.from({ length: TOTAL_SETS }).map((_, i) => {
           const setNum = i + 1;
           return (
-            <div key={setNum} className="flex items-center gap-2">
-              <span className="text-[10px] text-muted-foreground w-8">S{setNum}</span>
+            <div key={setNum} className="flex items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground w-6">S{setNum}</span>
               <input
-                className="w-14 h-9 bg-surface-high border border-border rounded-lg text-center text-sm font-mono font-bold focus:border-primary focus:outline-none"
-                placeholder="0"
-                inputMode="numeric"
-                maxLength={2}
+                className="w-12 h-8 bg-surface-high border border-border rounded-lg text-center text-xs font-mono font-bold focus:border-primary focus:outline-none"
+                placeholder="0" inputMode="numeric" maxLength={2}
                 value={scores[setNum].a}
                 onChange={(e) => updateScore(setNum, "a", e.target.value)}
               />
-              <span className="text-muted-foreground text-xs">-</span>
+              <span className="text-muted-foreground text-[10px]">-</span>
               <input
-                className="w-14 h-9 bg-surface-high border border-border rounded-lg text-center text-sm font-mono font-bold focus:border-team-b focus:outline-none"
-                placeholder="0"
-                inputMode="numeric"
-                maxLength={2}
+                className="w-12 h-8 bg-surface-high border border-border rounded-lg text-center text-xs font-mono font-bold focus:border-team-b focus:outline-none"
+                placeholder="0" inputMode="numeric" maxLength={2}
                 value={scores[setNum].b}
                 onChange={(e) => updateScore(setNum, "b", e.target.value)}
               />
