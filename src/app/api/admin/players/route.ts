@@ -52,10 +52,6 @@ export async function PATCH(request: Request) {
   const admin = await checkAdmin();
   if (!admin) return NextResponse.json({ error: "Yetkisiz" }, { status: 403 });
 
-  if (admin.email !== SUPER_ADMIN_EMAIL) {
-    return NextResponse.json({ error: "Sadece ana admin rol değiştirebilir" }, { status: 403 });
-  }
-
   const { userId, role, approve } = await request.json();
   if (!userId) return NextResponse.json({ error: "Kullanıcı ID gerekli" }, { status: 400 });
 
@@ -65,6 +61,10 @@ export async function PATCH(request: Request) {
       data: { emailVerified: new Date(), verifyToken: null },
     });
     return NextResponse.json({ message: "Kullanıcı onaylandı." });
+  }
+
+  if (admin.email !== SUPER_ADMIN_EMAIL) {
+    return NextResponse.json({ error: "Sadece ana admin rol değiştirebilir" }, { status: 403 });
   }
 
   await db.user.update({ where: { id: userId }, data: { role } });
