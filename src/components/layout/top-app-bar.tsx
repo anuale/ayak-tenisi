@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Trophy, Settings, Shield } from "lucide-react";
+import { Trophy, Settings, Shield, RefreshCw } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 interface TopAppBarProps {
@@ -32,6 +32,19 @@ export function TopAppBar({ showBack, backHref, title, isAdmin }: TopAppBarProps
       )}
 
       <div className="flex items-center gap-1">
+        <button
+          onClick={async () => {
+            if ("caches" in window) {
+              const keys = await caches.keys();
+              await Promise.all(keys.map((k) => caches.delete(k)));
+            }
+            window.location.reload();
+          }}
+          className="text-muted-foreground hover:text-foreground active:scale-95 transition-all p-1"
+          title="Yenile"
+        >
+          <RefreshCw className="w-4 h-4" />
+        </button>
         {isAdmin && (
           <Link
             href="/admin"
