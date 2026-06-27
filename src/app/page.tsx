@@ -170,7 +170,7 @@ export default async function DashboardPage() {
               ))}
             </div>
             <span className="text-[10px] text-muted-foreground text-center opacity-70">
-              GOL KRALI
+              EN ÇOK KAZANAN
             </span>
           </div>
           <div className="glass-surface border border-border/50 rounded-xl p-3 flex flex-col items-center justify-center gap-1">
@@ -185,7 +185,7 @@ export default async function DashboardPage() {
               )}
             </div>
             <span className="text-[10px] text-muted-foreground text-center opacity-70">
-              EN ÇOK KAZANAN
+              EN İYİ TAKIM
             </span>
           </div>
         </section>
