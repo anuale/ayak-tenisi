@@ -80,12 +80,14 @@ export default async function StandingsPage() {
 
     if (match.winner === "A") {
       teamAStats.won++;
-      teamAStats.points += 3;
+      teamAStats.points += 3 + (teamAWins - teamBWins);
       teamBStats.lost++;
+      teamBStats.points += teamBWins;
     } else {
       teamBStats.won++;
-      teamBStats.points += 3;
+      teamBStats.points += 3 + (teamBWins - teamAWins);
       teamAStats.lost++;
+      teamAStats.points += teamAWins;
     }
 
     for (const mp of match.players) {
@@ -113,8 +115,8 @@ export default async function StandingsPage() {
       stats.played++;
       stats.setsFor += teamAWins;
       stats.setsAgainst += teamBWins;
-      if (aWon) { stats.won++; stats.points += 3; }
-      else stats.lost++;
+      if (aWon) { stats.won++; stats.points += 3 + (teamAWins - teamBWins); }
+      else { stats.lost++; stats.points += teamAWins; }
     }
 
     for (const p of teamBPlayers) {
@@ -122,8 +124,8 @@ export default async function StandingsPage() {
       stats.played++;
       stats.setsFor += teamBWins;
       stats.setsAgainst += teamAWins;
-      if (bWon) { stats.won++; stats.points += 3; }
-      else stats.lost++;
+      if (bWon) { stats.won++; stats.points += 3 + (teamBWins - teamAWins); }
+      else { stats.lost++; stats.points += teamBWins; }
     }
   }
 

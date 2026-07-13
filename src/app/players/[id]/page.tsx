@@ -35,7 +35,7 @@ export default async function PlayerProfilePage({
     take: 20,
   });
 
-  let played = 0, won = 0, lost = 0, setsFor = 0, setsAgainst = 0;
+  let played = 0, won = 0, lost = 0, setsFor = 0, setsAgainst = 0, points = 0;
   const recentForm: Array<"W" | "L"> = [];
   const recentMatches: Array<{
     id: string;
@@ -65,6 +65,11 @@ export default async function PlayerProfilePage({
     const isWin = m.winner === mp.team;
     if (isWin) won++;
     else lost++;
+
+    const matchPoints = isWin
+      ? 3 + (teamSets - oppSets)
+      : teamSets;
+    points += matchPoints;
 
     if (recentForm.length < 5) recentForm.push(isWin ? "W" : "L");
 
@@ -116,7 +121,7 @@ export default async function PlayerProfilePage({
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <div className="glass-surface border border-border/50 rounded-xl p-4 text-center">
             <span className="font-heading text-xl font-bold text-foreground">{played}</span>
             <p className="text-[10px] text-muted-foreground">Maç</p>
@@ -134,6 +139,10 @@ export default async function PlayerProfilePage({
               +{setsFor - setsAgainst}
             </span>
             <p className="text-[10px] text-muted-foreground">Set Averajı</p>
+          </div>
+          <div className="glass-surface border border-primary/30 rounded-xl p-4 text-center">
+            <span className="font-heading text-xl font-bold text-primary">{points}</span>
+            <p className="text-[10px] text-muted-foreground">Puan</p>
           </div>
         </div>
 
