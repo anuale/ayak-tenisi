@@ -46,6 +46,17 @@ export default async function PlayerProfilePage({
     setsB: number;
     won: boolean;
   }> = [];
+  const pointDetails: Array<{
+    id: string;
+    date: Date | null;
+    teamA: string;
+    teamB: string;
+    setsA: number;
+    setsB: number;
+    won: boolean;
+    matchPoints: number;
+    formula: string;
+  }> = [];
 
   for (const mp of matchPlayers) {
     const m = mp.match;
@@ -71,19 +82,37 @@ export default async function PlayerProfilePage({
       : teamSets;
     points += matchPoints;
 
+    const teamAName = m.teamAName || m.players.filter(p => p.team === "A").map(p => p.user.name).join(", ");
+    const teamBName = m.teamBName || m.players.filter(p => p.team === "B").map(p => p.user.name).join(", ");
+
     if (recentForm.length < 5) recentForm.push(isWin ? "W" : "L");
 
     if (recentMatches.length < 10) {
       recentMatches.push({
         id: m.id,
         date: m.playedAt || m.finishedAt,
-        teamA: m.teamAName || m.players.filter(p => p.team === "A").map(p => p.user.name).join(", "),
-        teamB: m.teamBName || m.players.filter(p => p.team === "B").map(p => p.user.name).join(", "),
+        teamA: teamAName,
+        teamB: teamBName,
         setsA: m.sets.filter(s => s.teamAScore > s.teamBScore).length,
         setsB: m.sets.filter(s => s.teamBScore > s.teamAScore).length,
         won: isWin,
       });
     }
+
+    const formula = isWin
+      ? `3 (galibiyet) + ${teamSets - oppSets} (fark) = ${matchPoints} puan`
+      : `${teamSets} (kazanılan set) = ${matchPoints} puan`;
+    pointDetails.push({
+      id: m.id,
+      date: m.playedAt || m.finishedAt,
+      teamA: teamAName,
+      teamB: teamBName,
+      setsA: teamSets,
+      setsB: oppSets,
+      won: isWin,
+      matchPoints,
+      formula,
+    });
   }
 
   const winRate = played > 0 ? Math.round((won / played) * 100) : 0;
@@ -145,6 +174,56 @@ export default async function PlayerProfilePage({
             <p className="text-[10px] text-muted-foreground">Puan</p>
           </div>
         </div>
+
+        {/* Puan Detayı */}
+        {pointDetails.length > 0 && (
+          <div className="glass-surface border border-border/50 rounded-xl p-4">
+            <p className="text-xs font-mono font-bold text-muted-foreground uppercase tracking-widest mb-3">
+              Puan Detayı
+            </p>
+            <div className="flex flex-col gap-2">
+              {pointDetails.map((pd) => (
+                <Link
+                  key={pd.id}
+                  href={`/match/${pd.id}`}
+                  className="bg-surface/50 border border-border/30 rounded-lg p-3 active:scale-[0.98] transition-transform"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-xs text-foreground truncate">
+                        {pd.teamA} - {pd.teamB}
+                      </p>
+                      {pd.date && (
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                          {new Date(pd.date).toLocaleDateString("tr-TR")}
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-center flex-shrink-0">
+                      <span className={`font-heading font-bold text-sm ${pd.won ? "text-primary" : "text-destructive"}`}>
+                        {pd.setsA}
+                      </span>
+                      <span className="text-muted-foreground text-xs mx-1">-</span>
+                      <span className={`font-heading font-bold text-sm ${pd.won ? "text-muted-foreground" : "text-team-b"}`}>
+                        {pd.setsB}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-border/20">
+                    <span className={`text-[10px] font-mono font-bold ${pd.won ? "text-primary" : "text-destructive"}`}>
+                      {pd.won ? "GALİBİYET" : "MAĞLUBİYET"}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">{pd.formula}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-3 pt-3 border-t border-primary/20 flex items-center justify-between">
+              <span className="text-xs font-mono font-bold text-muted-foreground">TOPLAM</span>
+              <span className="font-heading text-base font-bold text-primary">{points} puan</span>
+            </div>
+          </div>
+        )}
 
         {/* Form Guide */}
         {recentForm.length > 0 && (

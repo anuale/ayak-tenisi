@@ -103,23 +103,18 @@ export function StandingsTabs({
       {data.map((item, i) => {
         const name = "userId" in item ? (item as PlayerStats).name : (item as TeamStats).name;
         const userId = "userId" in item ? (item as PlayerStats).userId : null;
-        return (
-          <div
-            key={userId || name}
-            className={`glass-surface border border-border/50 rounded-xl p-4 border-l-4 ${medalColors(i)}`}
-          >
+        const cardClass = `glass-surface border border-border/50 rounded-xl p-4 border-l-4 ${medalColors(i)}${userId ? " block active:scale-[0.98] transition-transform cursor-pointer" : ""}`;
+
+        const inner = (
+          <>
             <div className="flex md:hidden items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-sm font-mono font-bold text-muted-foreground w-5">
                   {i + 1}
                 </span>
-                {userId ? (
-                  <Link href={`/players/${userId}`} className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                    {name}
-                  </Link>
-                ) : (
-                  <span className="text-sm font-medium text-foreground">{name}</span>
-                )}
+                <span className="text-sm font-medium text-foreground">
+                  {name}
+                </span>
               </div>
               <span className="font-heading text-lg font-bold text-primary">
                 {item.points}
@@ -128,13 +123,9 @@ export function StandingsTabs({
             </div>
             <div className="hidden md:grid grid-cols-[40px_1fr_40px_40px_40px_40px_50px] gap-2 items-center">
               <span className="text-sm font-mono font-bold text-muted-foreground">{i + 1}</span>
-              {userId ? (
-                <Link href={`/players/${userId}`} className="text-sm font-medium text-foreground hover:text-primary transition-colors">
-                  {name}
-                </Link>
-              ) : (
-                <span className="text-sm font-medium text-foreground">{name}</span>
-              )}
+              <span className="text-sm font-medium text-foreground">
+                {name}
+              </span>
               <span className="text-sm text-center text-foreground">{item.played}</span>
               <span className="text-sm text-center text-primary">{item.won}</span>
               <span className="text-sm text-center text-muted-foreground">{item.lost}</span>
@@ -165,6 +156,20 @@ export function StandingsTabs({
                 {item.setsFor - item.setsAgainst}
               </span>
             </div>
+          </>
+        );
+
+        return userId ? (
+          <Link
+            key={userId}
+            href={`/players/${userId}`}
+            className={cardClass}
+          >
+            {inner}
+          </Link>
+        ) : (
+          <div key={name} className={cardClass}>
+            {inner}
           </div>
         );
       })}
