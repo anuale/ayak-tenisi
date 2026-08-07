@@ -24,6 +24,8 @@ export function NewMatchForm({
   const [error, setError] = useState("");
   const [teamAName, setTeamAName] = useState("");
   const [teamBName, setTeamBName] = useState("");
+  const [manualTeamA, setManualTeamA] = useState(false);
+  const [manualTeamB, setManualTeamB] = useState(false);
   const [playedAt, setPlayedAt] = useState(() => {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -150,12 +152,15 @@ export function NewMatchForm({
                 className="bg-surface-high border border-border rounded-lg px-3 py-2.5 text-xs text-center text-primary font-bold placeholder:text-muted-foreground focus:border-primary focus:outline-none"
                 placeholder="Takım A"
                 value={teamAName}
-                onChange={(e) => setTeamAName(e.target.value)}
+                onChange={(e) => { setTeamAName(e.target.value); setManualTeamA(true); }}
               />
               <PlayerSelects
                 team="A"
                 count={teamASize}
                 users={users}
+                onUpdate={(names) => {
+                  if (!manualTeamA) setTeamAName(names.join(", "));
+                }}
               />
             </div>
 
@@ -170,12 +175,15 @@ export function NewMatchForm({
                 className="bg-surface-high border border-border rounded-lg px-3 py-2.5 text-xs text-center text-team-b font-bold placeholder:text-muted-foreground focus:border-team-b focus:outline-none"
                 placeholder="Takım B"
                 value={teamBName}
-                onChange={(e) => setTeamBName(e.target.value)}
+                onChange={(e) => { setTeamBName(e.target.value); setManualTeamB(true); }}
               />
               <PlayerSelects
                 team="B"
                 count={teamBSize}
                 users={users}
+                onUpdate={(names) => {
+                  if (!manualTeamB) setTeamBName(names.join(", "));
+                }}
               />
             </div>
           </div>
@@ -233,13 +241,29 @@ function PlayerSelects({
   team,
   count,
   users,
+  onUpdate,
 }: {
   team: "A" | "B";
   count: number;
   users: UserOption[];
+  onUpdate?: (names: string[]) => void;
 }) {
   const isTeamA = team === "A";
   const barColor = isTeamA ? "bg-primary" : "bg-team-b";
+
+  function notify() {
+    if (!onUpdate) return;
+    setTimeout(() => {
+      const names: string[] = [];
+      for (let i = 1; i <= count; i++) {
+        const sel = document.querySelector<HTMLSelectElement>(`select[name="team${team}_player_${i}"]`);
+        if (sel?.selectedOptions[0]?.textContent && sel.selectedOptions[0].value) {
+          names.push(sel.selectedOptions[0].textContent);
+        }
+      }
+      if (names.length > 0) onUpdate(names);
+    }, 0);
+  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -256,10 +280,11 @@ function PlayerSelects({
             <label className="text-[9px] text-muted-foreground pl-1">
               Oyuncu {i + 1}
             </label>
-            <select
-              name={`team${team}_player_${i + 1}`}
-              defaultValue=""
-              className="w-full bg-transparent border-none text-foreground text-xs px-1 py-0 pr-5 focus:ring-0 outline-none cursor-pointer appearance-none truncate"
+              <select
+                name={`team${team}_player_${i + 1}`}
+                defaultValue=""
+                onChange={notify}
+                className="w-full bg-transparent border-none text-foreground text-xs px-1 py-0 pr-5 focus:ring-0 outline-none cursor-pointer appearance-none truncate"
               style={{
                 backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386948a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
                 backgroundRepeat: "no-repeat",
