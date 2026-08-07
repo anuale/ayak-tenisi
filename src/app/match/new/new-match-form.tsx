@@ -52,8 +52,8 @@ export function NewMatchForm({
       if (b) playersB.push(b as string);
     }
 
-    if (playersA.length !== playersB.length) {
-      setError("Her iki takımda da aynı sayıda oyuncu seçilmelidir.");
+    if (playersA.length === 0 || playersB.length === 0) {
+      setError("Her iki takımda da en az 1 oyuncu seçilmelidir.");
       setIsLoading(false);
       return;
     }

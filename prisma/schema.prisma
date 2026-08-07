@@ -48,6 +48,17 @@ model User {
   accounts           Account[]
   sessions           Session[]
   passwordResetTokens PasswordResetToken[]
+  transactions       Transaction[]
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  type        String
+  amount      Float
+  description String
+  createdBy   String
+  creator     User     @relation(fields: [createdBy], references: [id])
+  createdAt   DateTime @default(now())
 }
 
 model Account {

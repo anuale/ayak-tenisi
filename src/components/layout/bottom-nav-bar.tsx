@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Trophy, Clock, User, Swords } from "lucide-react";
+import { Home, Trophy, Clock, User, PiggyBank } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
   { href: "/standings", label: "Standings", icon: Trophy },
-  { href: "/tournament", label: "Turnuva", icon: Swords },
   { href: "/history", label: "Maçlar", icon: Clock },
+  { href: "/kasa", label: "Kasa", icon: PiggyBank },
   { href: "/settings", label: "Profile", icon: User },
 ];
 
