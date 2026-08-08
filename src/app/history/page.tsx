@@ -55,7 +55,7 @@ export default async function HistoryPage() {
                 className="glass-surface border border-border/50 rounded-xl p-3 flex items-center justify-between active:scale-95 transition-transform gap-1"
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-foreground truncate">
+                  <p className="text-[11px] font-medium text-foreground leading-tight">
                     {teamA || "Takım A"}
                   </p>
                   {match.playedAt && (
@@ -86,7 +86,7 @@ export default async function HistoryPage() {
                   </span>
                 </div>
                 <div className="flex-1 min-w-0 text-right">
-                  <p className="text-xs text-muted-foreground truncate">
+                  <p className="text-[11px] text-muted-foreground leading-tight">
                     {teamB || "Takım B"}
                   </p>
                 </div>

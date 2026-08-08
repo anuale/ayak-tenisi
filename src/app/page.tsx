@@ -256,7 +256,7 @@ export default async function DashboardPage() {
                       }`}
                     />
                     <div className="flex-1 flex flex-col items-end">
-                      <span className="text-sm font-bold text-foreground truncate max-w-[120px]">
+                      <span className="text-[11px] font-bold text-foreground leading-tight">
                         {teamA || "Takım A"}
                       </span>
                       {isTeamAWinner && (
@@ -288,7 +288,7 @@ export default async function DashboardPage() {
                       </span>
                     </div>
                     <div className="flex-1 flex flex-col items-start">
-                      <span className="text-sm font-medium text-muted-foreground truncate max-w-[120px]">
+                      <span className="text-[11px] font-medium text-muted-foreground leading-tight">
                         {teamB || "Takım B"}
                       </span>
                       {!isTeamAWinner && (
