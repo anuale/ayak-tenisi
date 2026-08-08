@@ -9,12 +9,14 @@ export async function POST(request: Request) {
   }
 
   const { type, amount, description, paidBy } = await request.json();
-  if (!type || !amount || !description) {
+  if (!type || !amount) {
     return NextResponse.json({ error: "Eksik bilgi" }, { status: 400 });
   }
 
+  const desc = description || (type === "GELİR" ? "Aidat" : "Saha ücreti");
+
   const transaction = await db.transaction.create({
-    data: { type, amount, description, paidBy: paidBy || null, createdBy: session.user.id },
+    data: { type, amount, description: desc, paidBy: paidBy || null, createdBy: session.user.id },
   });
 
   return NextResponse.json(transaction, { status: 201 });

@@ -33,7 +33,6 @@ export function KasaPanel({
   const [isAdding, setIsAdding] = useState(false);
   const [type, setType] = useState("GELİR");
   const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
   const [paidBy, setPaidBy] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
@@ -43,17 +42,18 @@ export function KasaPanel({
     setError("");
     const num = parseFloat(amount);
     if (!num || num <= 0) { setError("Geçerli bir tutar girin."); return; }
-    if (!description.trim()) { setError("Açıklama girin."); return; }
 
     setIsSaving(true);
+    const payer = users.find(u => u.id === paidBy);
+    const desc = payer ? `${payer.name}` : (type === "GELİR" ? "Aidat" : "Saha ücreti");
+
     const res = await fetch("/api/kasa", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, amount: num, description: description.trim(), paidBy: paidBy || undefined }),
+      body: JSON.stringify({ type, amount: num, description: desc, paidBy: paidBy || undefined }),
     });
     if (res.ok) {
       setAmount("");
-      setDescription("");
       setPaidBy("");
       setIsAdding(false);
       router.refresh();
@@ -101,16 +101,11 @@ export function KasaPanel({
               Gider
             </button>
           </div>
-          <input className="bg-surface-high border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none"
-            placeholder="Açıklama (örn: Saha ücreti, Aidat)"
-            value={description} onChange={e => setDescription(e.target.value)} />
-          {type === "GELİR" && (
-            <select className="bg-surface-high border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none"
-              value={paidBy} onChange={e => setPaidBy(e.target.value)}>
-              <option value="" className="bg-surface">Ödeyen (opsiyonel)</option>
-              {users.map(u => <option key={u.id} value={u.id} className="bg-surface">{u.name}</option>)}
-            </select>
-          )}
+          <select className="bg-surface-high border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none"
+            value={paidBy} onChange={e => setPaidBy(e.target.value)}>
+            <option value="" className="bg-surface">{type === "GELİR" ? "Ödeyen oyuncu" : "Sahaya ödeyen"}</option>
+            {users.map(u => <option key={u.id} value={u.id} className="bg-surface">{u.name}</option>)}
+          </select>
           <input className="bg-surface-high border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none"
             placeholder="Tutar (₺)" inputMode="decimal"
             value={amount} onChange={e => setAmount(e.target.value)} />
