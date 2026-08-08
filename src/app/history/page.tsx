@@ -52,21 +52,21 @@ export default async function HistoryPage() {
               <Link
                 key={match.id}
                 href={`/match/${match.id}`}
-                className="glass-surface border border-border/50 rounded-xl p-4 flex items-center justify-between active:scale-95 transition-transform"
+                className="glass-surface border border-border/50 rounded-xl p-3 flex items-center justify-between active:scale-95 transition-transform gap-1"
               >
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground truncate">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-foreground truncate">
                     {teamA || "Takım A"}
                   </p>
                   {match.playedAt && (
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                    <p className="text-[9px] text-muted-foreground mt-0.5">
                       {new Date(match.playedAt).toLocaleDateString("tr-TR")}
                     </p>
                   )}
                 </div>
-                <div className="px-4 text-center">
+                <div className="px-2 text-center flex-shrink-0">
                   <span
-                    className={`font-heading text-lg font-bold ${
+                    className={`font-heading text-sm font-bold ${
                       match.winner === "A"
                         ? "text-primary"
                         : "text-muted-foreground"
@@ -74,9 +74,9 @@ export default async function HistoryPage() {
                   >
                     {setsA}
                   </span>
-                  <span className="text-muted-foreground mx-1">-</span>
+                  <span className="text-muted-foreground mx-0.5 text-xs">-</span>
                   <span
-                    className={`font-heading text-lg font-bold ${
+                    className={`font-heading text-sm font-bold ${
                       match.winner === "B"
                         ? "text-team-b"
                         : "text-muted-foreground"
@@ -85,8 +85,8 @@ export default async function HistoryPage() {
                     {setsB}
                   </span>
                 </div>
-                <div className="flex-1 text-right">
-                  <p className="text-sm text-muted-foreground truncate">
+                <div className="flex-1 min-w-0 text-right">
+                  <p className="text-xs text-muted-foreground truncate">
                     {teamB || "Takım B"}
                   </p>
                 </div>
