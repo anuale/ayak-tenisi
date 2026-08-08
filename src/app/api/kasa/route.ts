@@ -8,13 +8,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
   }
 
-  const { type, amount, description } = await request.json();
+  const { type, amount, description, paidBy } = await request.json();
   if (!type || !amount || !description) {
     return NextResponse.json({ error: "Eksik bilgi" }, { status: 400 });
   }
 
   const transaction = await db.transaction.create({
-    data: { type, amount, description, createdBy: session.user.id },
+    data: { type, amount, description, paidBy: paidBy || null, createdBy: session.user.id },
   });
 
   return NextResponse.json(transaction, { status: 201 });

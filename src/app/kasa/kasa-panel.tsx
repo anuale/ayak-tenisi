@@ -10,16 +10,21 @@ interface Transaction {
   amount: number;
   description: string;
   creator: { name: string };
+  paidUser?: { name: string } | null;
   createdAt: string;
 }
 
+interface UserOption { id: string; name: string; }
+
 export function KasaPanel({
   transactions,
+  users,
   balance,
   income,
   expense,
 }: {
   transactions: Transaction[];
+  users: UserOption[];
   balance: number;
   income: number;
   expense: number;
@@ -29,6 +34,7 @@ export function KasaPanel({
   const [type, setType] = useState("GELİR");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
+  const [paidBy, setPaidBy] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -43,11 +49,12 @@ export function KasaPanel({
     const res = await fetch("/api/kasa", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, amount: num, description: description.trim() }),
+      body: JSON.stringify({ type, amount: num, description: description.trim(), paidBy: paidBy || undefined }),
     });
     if (res.ok) {
       setAmount("");
       setDescription("");
+      setPaidBy("");
       setIsAdding(false);
       router.refresh();
     } else {
@@ -65,7 +72,6 @@ export function KasaPanel({
 
   return (
     <main className="flex-1 overflow-y-auto px-4 pt-4 pb-4 flex flex-col gap-4">
-      {/* Balance Card */}
       <div className={`glass-surface border rounded-xl p-5 text-center ${balance >= 0 ? "border-primary/30 bg-primary/5" : "border-destructive/30 bg-destructive/5"}`}>
         <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Kasa Bakiyesi</p>
         <span className={`font-heading text-3xl font-bold ${balance >= 0 ? "text-primary" : "text-destructive"}`}>
@@ -83,7 +89,6 @@ export function KasaPanel({
         </div>
       </div>
 
-      {/* Add Transaction */}
       {isAdding ? (
         <form onSubmit={handleAdd} className="glass-surface border border-border/50 rounded-xl p-4 flex flex-col gap-3">
           <div className="flex gap-2">
@@ -99,6 +104,13 @@ export function KasaPanel({
           <input className="bg-surface-high border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none"
             placeholder="Açıklama (örn: Saha ücreti, Aidat)"
             value={description} onChange={e => setDescription(e.target.value)} />
+          {type === "GELİR" && (
+            <select className="bg-surface-high border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none"
+              value={paidBy} onChange={e => setPaidBy(e.target.value)}>
+              <option value="" className="bg-surface">Ödeyen (opsiyonel)</option>
+              {users.map(u => <option key={u.id} value={u.id} className="bg-surface">{u.name}</option>)}
+            </select>
+          )}
           <input className="bg-surface-high border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none"
             placeholder="Tutar (₺)" inputMode="decimal"
             value={amount} onChange={e => setAmount(e.target.value)} />
@@ -120,7 +132,6 @@ export function KasaPanel({
         </button>
       )}
 
-      {/* Transactions */}
       <p className="text-xs font-mono font-bold text-muted-foreground uppercase tracking-widest">İşlemler</p>
       <div className="flex flex-col gap-2">
         {transactions.map((t) => (
@@ -132,14 +143,13 @@ export function KasaPanel({
               <p className="text-sm text-foreground truncate">{t.description}</p>
               <p className="text-[10px] text-muted-foreground">
                 {new Date(t.createdAt).toLocaleDateString("tr-TR")} · {t.creator.name}
+                {t.paidUser && ` · ${t.paidUser.name} ödedi`}
               </p>
             </div>
             <span className={`text-sm font-bold ${t.type === "GELİR" ? "text-primary" : "text-destructive"}`}>
               {t.type === "GELİR" ? "+" : "-"}₺{t.amount.toFixed(2)}
             </span>
-            <button onClick={() => handleDelete(t.id)} className="text-muted-foreground hover:text-destructive text-[10px]">
-              Sil
-            </button>
+            <button onClick={() => handleDelete(t.id)} className="text-muted-foreground hover:text-destructive text-[10px]">Sil</button>
           </div>
         ))}
         {transactions.length === 0 && (

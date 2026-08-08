@@ -48,7 +48,8 @@ model User {
   accounts           Account[]
   sessions           Session[]
   passwordResetTokens PasswordResetToken[]
-  transactions       Transaction[]
+  transactions       Transaction[]      @relation("TransactionCreatedBy")
+  paidTransactions   Transaction[]      @relation("TransactionPaidBy")
 }
 
 model Transaction {
@@ -56,8 +57,10 @@ model Transaction {
   type        String
   amount      Float
   description String
+  paidBy      String?
+  paidUser    User?    @relation("TransactionPaidBy", fields: [paidBy], references: [id])
   createdBy   String
-  creator     User     @relation(fields: [createdBy], references: [id])
+  creator     User     @relation("TransactionCreatedBy", fields: [createdBy], references: [id])
   createdAt   DateTime @default(now())
 }
 
