@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { CredentialsSignin } from "next-auth";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
 
@@ -27,7 +28,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!user || !user.password) return null;
 
         if (!user.emailVerified) {
-          throw new Error("Hesabınız henüz onaylanmamış. Admin onayı bekleniyor.");
+          throw new CredentialsSignin("Hesabınız henüz onaylanmamış. Admin onayı bekleniyor.");
         }
 
         const isValid = await bcrypt.compare(
